@@ -70,4 +70,9 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   public void changeSpreadsheet(String newSpreadsheetId) {
     this.spreadsheetId = newSpreadsheetId;
   }
+
+  @Override
+  public void recommendStageAssignment() {
+    throw new UnsupportedOperationException();
+  }
 }
