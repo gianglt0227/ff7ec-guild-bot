@@ -1,5 +1,6 @@
 package com.jkmedia.ff7ecguildbot.service;
 
+import com.jkmedia.ff7ecguildbot.slashcommand.CommandHandlingException;
 import com.jkmedia.ff7ecguildbot.slashcommand.SlashCommandHandler;
 import com.jkmedia.ff7ecguildbot.slashcommand.SlashCommandHandlerFactory;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,11 @@ public class DiscordBotListener extends ListenerAdapter {
       SlashCommandHandler slashCommandHandler =
           slashCommandHandlerFactory.getSlashCommandHandler(event.getName());
       slashCommandHandler.handleEvent(event);
+
+    } catch (CommandHandlingException e) {
+      event.reply(e.getReplyMessage()).queue();
+      log.error(e.getReplyMessage(), e);
+
     } catch (Exception e) {
       log.error("Error while trying to handle slash command {}", event.getName(), e);
       event

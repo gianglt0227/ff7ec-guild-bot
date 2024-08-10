@@ -5,5 +5,5 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 public interface SlashCommandHandler {
   SlashCommand supportedCommand();
 
-  void handleEvent(SlashCommandInteractionEvent event);
+  void handleEvent(SlashCommandInteractionEvent event) throws CommandHandlingException;
 }

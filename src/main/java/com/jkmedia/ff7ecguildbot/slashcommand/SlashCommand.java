@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum SlashCommand {
+  CHANGE_SPREADSHEET("change-spreadsheet"),
   MOCK("mock"),
   UNKNOWN("Unknown");
 
