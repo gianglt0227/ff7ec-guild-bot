@@ -18,19 +18,19 @@ public class DiscordBotListener extends ListenerAdapter {
   @Override
   public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
     try {
-      event.getInteraction().getHook().setEphemeral(true);
       SlashCommandHandler slashCommandHandler =
           slashCommandHandlerFactory.getSlashCommandHandler(event.getName());
       slashCommandHandler.handleEvent(event);
 
     } catch (CommandHandlingException e) {
-      event.reply(e.getReplyMessage()).queue();
+      event.reply(e.getReplyMessage()).setEphemeral(true).queue();
       log.error(e.getReplyMessage(), e);
 
     } catch (Exception e) {
       log.error("Error while trying to handle slash command {}", event.getName(), e);
       event
           .reply("Error while trying to handle slash command! Please report to guild admin")
+          .setEphemeral(true)
           .queue();
     }
   }

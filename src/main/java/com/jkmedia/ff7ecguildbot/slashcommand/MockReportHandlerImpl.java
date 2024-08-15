@@ -32,10 +32,10 @@ public class MockReportHandlerImpl implements SlashCommandHandler {
     log.debug("received command: /mock {} {} from user {}", stage, percentage, username);
     try {
       googleSheetsService.updateMockBattle(username, stage, percentage);
-      event.reply("Updated the Mock battle sheet!").queue();
+      event.reply("Updated the Mock battle sheet!").setEphemeral(true).queue();
     } catch (Exception e) {
       log.error("", e);
-      event.reply("Failed to update the sheet!").queue();
+      event.reply("Failed to update the sheet!").setEphemeral(true).queue();
     }
   }
 
@@ -53,7 +53,8 @@ public class MockReportHandlerImpl implements SlashCommandHandler {
     return stage;
   }
 
-  private static double getPercentage(SlashCommandInteractionEvent event) throws CommandHandlingException {
+  private static double getPercentage(SlashCommandInteractionEvent event)
+      throws CommandHandlingException {
     double percentage;
     String percentageError =
         "Invalid percentage, must be an number from 0 to 100, and max 2 decimal places only. Eg: 22.34";
