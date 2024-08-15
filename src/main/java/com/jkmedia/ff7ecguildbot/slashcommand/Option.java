@@ -6,16 +6,16 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum SlashCommand {
-  ADMIN_MOCK("admin-mock"),
-  CHANGE_SPREADSHEET("change-spreadsheet"),
-  MOCK("mock"),
+public enum Option {
+  STAGE("stage"),
+  PERCENTAGE("percentage"),
+  USERNAME("username"),
   UNKNOWN("Unknown");
 
   private final String value;
 
-  public static SlashCommand getEnum(String value) {
-    for (SlashCommand enumItem : SlashCommand.values()) {
+  public static Option getEnum(String value) {
+    for (Option enumItem : Option.values()) {
       if (Objects.equals(enumItem.value, value)) {
         return enumItem;
       }

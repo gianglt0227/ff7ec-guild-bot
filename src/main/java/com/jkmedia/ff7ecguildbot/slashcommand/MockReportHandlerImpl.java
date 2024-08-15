@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MockHandlerImpl implements SlashCommandHandler {
+public class MockReportHandlerImpl implements SlashCommandHandler {
   private final GoogleSheetsService googleSheetsService;
 
   @Override
@@ -19,9 +19,15 @@ public class MockHandlerImpl implements SlashCommandHandler {
 
   @Override
   public void handleEvent(SlashCommandInteractionEvent event) throws CommandHandlingException {
+    String username = event.getUser().getEffectiveName();
+    doHandle(username, event);
+  }
+
+  protected void doHandle(String username, SlashCommandInteractionEvent event)
+      throws CommandHandlingException {
     int stage;
     try {
-      stage = event.getOption("stage").getAsInt();
+      stage = event.getOption(Option.STAGE.getValue()).getAsInt();
     } catch (NumberFormatException e) {
       throw new CommandHandlingException("Invalid stage. Stage must be an integer from 1 to 5", e);
     }
@@ -31,7 +37,7 @@ public class MockHandlerImpl implements SlashCommandHandler {
 
     double percentage;
     try {
-      percentage = event.getOption("percentage").getAsDouble();
+      percentage = event.getOption(Option.PERCENTAGE.getValue()).getAsDouble();
     } catch (NumberFormatException e) {
       throw new CommandHandlingException("Invalid percentage, must be an number from 0 to 100", e);
     }
@@ -39,15 +45,13 @@ public class MockHandlerImpl implements SlashCommandHandler {
       throw new CommandHandlingException("Invalid percentage, must be an number from 0 to 100");
     }
 
-    String username = event.getUser().getEffectiveName();
-
     log.debug("received command: /mock {} {} from user {}", stage, percentage, username);
     try {
       googleSheetsService.updateMockBattle(username, stage, percentage);
-      event.reply("Updated the Mock battle sheet!").queue();
+      event.reply("Updated the Mock battle sheet!").setEphemeral(true).queue();
     } catch (Exception e) {
       log.error("", e);
-      event.reply("Failed to update the sheet!").queue();
+      event.reply("Failed to update the sheet!").setEphemeral(true).queue();
     }
   }
 }
