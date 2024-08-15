@@ -18,6 +18,7 @@ public class DiscordBotListener extends ListenerAdapter {
   @Override
   public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
     try {
+      event.getInteraction().getHook().setEphemeral(true);
       SlashCommandHandler slashCommandHandler =
           slashCommandHandlerFactory.getSlashCommandHandler(event.getName());
       slashCommandHandler.handleEvent(event);
