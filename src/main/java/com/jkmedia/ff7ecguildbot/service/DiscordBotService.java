@@ -24,40 +24,58 @@ public class DiscordBotService {
 
   @PostConstruct
   public void init() {
-    //    String token = new
-    JDA jda = JDABuilder.createDefault(discordToken).build();
-    jda.addEventListener(discordBotListener);
+    try {
+      //    String token = new
+      JDA jda = JDABuilder.createDefault(discordToken).build();
+      jda.addEventListener(discordBotListener);
 
-    OptionData stageOption =
-        new OptionData(
-            OptionType.STRING, Option.STAGE.getValue(), "Stage of the mock battle (1 - 5)", true);
-    OptionData percentageOption =
-        new OptionData(
-            OptionType.STRING,
-            Option.PERCENTAGE.getValue(),
-            "Percentage of boss heath removed. 2 decimal places only. Eg: 12.26",
-            true);
-    OptionData usernameOption =
-        new OptionData(
-            OptionType.STRING,
-            Option.USERNAME.getValue(),
-            "Discord display name of the user that you want to report for",
-            true);
-    ;
+      OptionData stageOption =
+          new OptionData(
+              OptionType.INTEGER, Option.STAGE.getValue(), "Stage of the mock battle (1 - 5)", true);
+      stageOption.setMinValue(1).setMaxValue(5);
 
-    jda.upsertCommand(SlashCommand.MOCK.getValue(), "Submit mock battle result")
-        .addOptions(stageOption, percentageOption)
-        .queue();
+      OptionData percentageOption =
+          new OptionData(
+              OptionType.NUMBER,
+              Option.PERCENT_HP_REDUCED.getValue(),
+              "Percentage of boss HP reduced. 2 decimal places only. Eg: 12.26",
+              true);
+      percentageOption.setMinValue(0).setMaxValue(100);
 
-    jda.upsertCommand(
-            Commands.slash(
-                    SlashCommand.ADMIN_MOCK.getValue(),
-                    "Submit mock battle result for other people (admin permission required)")
-                .setDefaultPermissions(
-                    DefaultMemberPermissions.enabledFor(
-                        Permission.MANAGE_CHANNEL, Permission.MODERATE_MEMBERS))
-                .addOptions(usernameOption, stageOption, percentageOption))
-        .queue();
+      OptionData usernameOption =
+          new OptionData(
+              OptionType.USER,
+              Option.USERNAME.getValue(),
+              "Discord display name of the user that you want to report for",
+              true);
+
+      OptionData attemptUsedOption =
+          new OptionData(
+              OptionType.INTEGER,
+              Option.ATTEMP_USED.getValue(),
+              "How many attempt did you used?",
+              true);
+      attemptUsedOption.setMinValue(1).setMaxValue(3);
+
+      jda.upsertCommand(SlashCommand.MOCK.getValue(), "Submit mock battle result")
+          .addOptions(stageOption, percentageOption)
+          .queue();
+      jda.upsertCommand(SlashCommand.REAL_BATTLE.getValue(), "Submit real battle result")
+          .addOptions(stageOption, percentageOption, attemptUsedOption)
+          .queue();
+
+      jda.upsertCommand(
+              Commands.slash(
+                      SlashCommand.ADMIN_MOCK.getValue(),
+                      "Submit mock battle result for other people (admin permission required)")
+                  .setDefaultPermissions(
+                      DefaultMemberPermissions.enabledFor(
+                          Permission.MANAGE_CHANNEL, Permission.MODERATE_MEMBERS))
+                  .addOptions(usernameOption, stageOption, percentageOption))
+          .queue();
+    } catch (Exception e) {
+      log.error("", e);
+    }
   }
 
   @Value("${discord.token}")

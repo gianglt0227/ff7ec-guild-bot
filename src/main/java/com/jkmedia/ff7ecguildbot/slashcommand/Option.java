@@ -8,7 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Option {
   STAGE("stage"),
-  PERCENTAGE("percentage"),
+  PERCENT_HP_REDUCED("total-hp-percent-reduced"),
+  ATTEMP_USED("attempt-used"),
   USERNAME("username"),
   UNKNOWN("Unknown");
 
