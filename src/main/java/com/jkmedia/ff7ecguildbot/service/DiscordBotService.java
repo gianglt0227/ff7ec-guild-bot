@@ -31,7 +31,10 @@ public class DiscordBotService {
 
       OptionData stageOption =
           new OptionData(
-              OptionType.INTEGER, Option.STAGE.getValue(), "Stage of the mock battle (1 - 5)", true);
+              OptionType.INTEGER,
+              Option.STAGE.getValue(),
+              "Stage of the mock battle (1 - 5)",
+              true);
       stageOption.setMinValue(1).setMaxValue(5);
 
       OptionData percentageOption =
@@ -52,7 +55,7 @@ public class DiscordBotService {
       OptionData attemptUsedOption =
           new OptionData(
               OptionType.INTEGER,
-              Option.ATTEMP_USED.getValue(),
+              Option.ATTEMPT_LEFT.getValue(),
               "How many attempt did you used?",
               true);
       attemptUsedOption.setMinValue(1).setMaxValue(3);

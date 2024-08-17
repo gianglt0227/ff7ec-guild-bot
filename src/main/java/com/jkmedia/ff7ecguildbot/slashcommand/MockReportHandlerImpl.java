@@ -2,6 +2,7 @@ package com.jkmedia.ff7ecguildbot.slashcommand;
 
 import com.jkmedia.ff7ecguildbot.service.GoogleSheetsService;
 import java.math.BigDecimal;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -32,6 +33,7 @@ public class MockReportHandlerImpl implements SlashCommandHandler {
     log.debug("received command: /mock {} {} from user {}", stage, percentage, username);
     try {
       googleSheetsService.updateMockBattle(username, stage, percentage);
+      googleSheetsService.insertMockBattleHistory(username, stage, percentage);
       event.reply("Updated the Mock battle sheet!").setEphemeral(true).queue();
     } catch (Exception e) {
       log.error("", e);
@@ -40,12 +42,13 @@ public class MockReportHandlerImpl implements SlashCommandHandler {
   }
 
   private static int getStage(SlashCommandInteractionEvent event) {
-    return event.getOption(Option.STAGE.getValue()).getAsInt();
+    return Objects.requireNonNull(event.getOption(Option.STAGE.getValue())).getAsInt();
   }
 
   private static double getPercentage(SlashCommandInteractionEvent event)
       throws CommandHandlingException {
-    double percentage = event.getOption(Option.PERCENT_HP_REDUCED.getValue()).getAsDouble();
+    double percentage =
+        Objects.requireNonNull(event.getOption(Option.PERCENT_HP_REDUCED.getValue())).getAsDouble();
     if (BigDecimal.valueOf(percentage).scale() > 2) {
       throw new CommandHandlingException(
           "Invalid percentage, must be an number from 0 to 100, and max 2 decimal places only. Eg: 22.34");
