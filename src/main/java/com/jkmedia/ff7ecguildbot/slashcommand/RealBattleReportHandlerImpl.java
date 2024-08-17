@@ -36,10 +36,10 @@ public class RealBattleReportHandlerImpl implements SlashCommandHandler {
     try {
       googleSheetsService.updateRealBattle(username, stage, percentage, attemptLeft);
       googleSheetsService.insertRealBattleHistory(username, stage, percentage, attemptLeft);
-      event.reply("Updated the Mock battle sheet!").setEphemeral(true).queue();
+      event.getHook().sendMessage("Updated the Mock battle sheet!").setEphemeral(true).queue();
     } catch (Exception e) {
       log.error("", e);
-      event.reply("Failed to update the sheet!").setEphemeral(true).queue();
+      event.getHook().sendMessage("Failed to update the sheet!").setEphemeral(true).queue();
     }
   }
 

@@ -34,10 +34,10 @@ public class MockReportHandlerImpl implements SlashCommandHandler {
     try {
       googleSheetsService.updateMockBattle(username, stage, percentage);
       googleSheetsService.insertMockBattleHistory(username, stage, percentage);
-      event.reply("Updated the Mock battle sheet!").setEphemeral(true).queue();
+      event.getHook().sendMessage("Updated the Mock battle sheet!").setEphemeral(true).queue();
     } catch (Exception e) {
       log.error("", e);
-      event.reply("Failed to update the sheet!").setEphemeral(true).queue();
+      event.getHook().sendMessage("Failed to update the sheet!").setEphemeral(true).queue();
     }
   }
 
