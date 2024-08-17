@@ -26,8 +26,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   private static final String REAL_BATTLE_SHEET = "Real Battle";
   private static final String MOCK_BATTLE_HISTORY_SHEET = "Mock Battle History";
   private static final String REAL_BATTLE_HISTORY_SHEET = "Real Battle History";
-  private final DateTimeFormatter dateTimeFormatter =
-      DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss");
+  private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss");
 
   @Override
   public void updateMockBattle(String username, int stage, double percentage) throws IOException {
@@ -43,7 +42,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   @Override
   public void insertMockBattleHistory(String username, int stage, double percentage)
       throws IOException {
-    int rowNumToInsert = findLastRowNum(MOCK_BATTLE_SHEET);
+    int rowNumToInsert = findLastRowNum(MOCK_BATTLE_HISTORY_SHEET) + 1;
     String time = dateTimeFormatter.format(LocalDateTime.now());
     updateCell(MOCK_BATTLE_HISTORY_SHEET, "A" + rowNumToInsert, username);
     updateCell(MOCK_BATTLE_HISTORY_SHEET, "B" + rowNumToInsert, stage);
@@ -67,7 +66,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   @Override
   public void insertRealBattleHistory(
       String username, int stage, double percentage, Integer attemptLeft) throws IOException {
-    int rowNumToInsert = findLastRowNum(REAL_BATTLE_HISTORY_SHEET);
+    int rowNumToInsert = findLastRowNum(REAL_BATTLE_HISTORY_SHEET) + 1;
     String time = dateTimeFormatter.format(LocalDateTime.now());
     updateCell(REAL_BATTLE_HISTORY_SHEET, "A" + rowNumToInsert, username);
     updateCell(REAL_BATTLE_HISTORY_SHEET, "B" + rowNumToInsert, stage);
@@ -77,22 +76,15 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   }
 
   private int findLastRowNum(String sheetName) throws IOException {
+    String range = String.format("'%s'!%s", sheetName, "A:A");
+    log.debug("Finding the last row in this range {} of spreadsheetId {}", range, spreadsheetId);
     ValueRange valueRange =
-        sheetsService
-            .spreadsheets()
-            .values()
-            .get(spreadsheetId, String.format("'%s'!%s", sheetName, "A:A"))
-            .execute();
-    int lastRow = 2;
+        sheetsService.spreadsheets().values().get(spreadsheetId, range).execute();
+    int lastRow = 1;
     if (!CollectionUtils.isEmpty(valueRange.getValues())) {
-      for (List<Object> rows : valueRange.getValues()) {
-        if (rows.get(0) == null) {
-          break;
-        }
-        lastRow++;
-      }
+      return valueRange.getValues().size();
     }
-    return lastRow;
+    return lastRow + 1;
   }
 
   private @NotNull Integer searchUser(String username) throws IOException {
