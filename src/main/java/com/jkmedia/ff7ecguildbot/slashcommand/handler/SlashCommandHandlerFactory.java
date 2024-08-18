@@ -1,5 +1,6 @@
-package com.jkmedia.ff7ecguildbot.slashcommand;
+package com.jkmedia.ff7ecguildbot.slashcommand.handler;
 
+import com.jkmedia.ff7ecguildbot.slashcommand.SlashCommand;
 import jakarta.annotation.PostConstruct;
 import java.util.EnumMap;
 import java.util.List;

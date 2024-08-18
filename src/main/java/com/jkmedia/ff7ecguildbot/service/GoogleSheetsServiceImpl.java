@@ -26,7 +26,8 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   private static final String REAL_BATTLE_SHEET = "Real Battle";
   private static final String MOCK_BATTLE_HISTORY_SHEET = "Mock Battle History";
   private static final String REAL_BATTLE_HISTORY_SHEET = "Real Battle History";
-  private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss");
+  private final DateTimeFormatter dateTimeFormatter =
+      DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss");
 
   @Override
   public void updateMockBattle(String username, int stage, double percentage) throws IOException {

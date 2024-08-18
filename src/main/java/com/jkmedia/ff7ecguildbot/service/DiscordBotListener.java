@@ -1,8 +1,8 @@
 package com.jkmedia.ff7ecguildbot.service;
 
 import com.jkmedia.ff7ecguildbot.slashcommand.CommandHandlingException;
-import com.jkmedia.ff7ecguildbot.slashcommand.SlashCommandHandler;
-import com.jkmedia.ff7ecguildbot.slashcommand.SlashCommandHandlerFactory;
+import com.jkmedia.ff7ecguildbot.slashcommand.handler.SlashCommandHandler;
+import com.jkmedia.ff7ecguildbot.slashcommand.handler.SlashCommandHandlerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
