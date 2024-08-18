@@ -2,7 +2,6 @@ package com.jkmedia.ff7ecguildbot.slashcommand.handler;
 
 import com.jkmedia.ff7ecguildbot.service.GoogleSheetsService;
 import com.jkmedia.ff7ecguildbot.slashcommand.SlashCommand;
-
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +33,7 @@ public class ChangeSpreadsheetHandlerImpl implements SlashCommandHandler {
 
   @Override
   public void handleEvent(SlashCommandInteractionEvent event) {
-    googleSheetsService.changeSpreadsheet(Objects.requireNonNull(event.getOption("spreadsheetId")).getAsString());
+    googleSheetsService.changeSpreadsheet(
+        Objects.requireNonNull(event.getOption("spreadsheetId")).getAsString());
   }
 }

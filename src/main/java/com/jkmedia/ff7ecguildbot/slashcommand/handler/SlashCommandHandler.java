@@ -8,7 +8,9 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public interface SlashCommandHandler {
   SlashCommand supportedCommand();
+
   String description();
+
   List<OptionData> options();
 
   void handleEvent(SlashCommandInteractionEvent event) throws CommandHandlingException;
