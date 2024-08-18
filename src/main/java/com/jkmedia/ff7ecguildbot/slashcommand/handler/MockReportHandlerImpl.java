@@ -5,10 +5,12 @@ import com.jkmedia.ff7ecguildbot.slashcommand.CommandHandlingException;
 import com.jkmedia.ff7ecguildbot.slashcommand.Option;
 import com.jkmedia.ff7ecguildbot.slashcommand.SlashCommand;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -16,10 +18,22 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MockReportHandlerImpl implements SlashCommandHandler {
   private final GoogleSheetsService googleSheetsService;
+  protected final OptionData stageOption;
+  protected final OptionData percentageOption;
 
   @Override
   public SlashCommand supportedCommand() {
     return SlashCommand.MOCK;
+  }
+
+  @Override
+  public String description() {
+    return "Submit mock battle result";
+  }
+
+  @Override
+  public List<OptionData> options() {
+    return List.of(stageOption, percentageOption);
   }
 
   @Override
