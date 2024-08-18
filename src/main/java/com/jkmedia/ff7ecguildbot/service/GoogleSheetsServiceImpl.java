@@ -98,7 +98,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   }
 
   private int findLastRowNum(String sheetName) throws IOException {
-    String range = String.format("'%s'!%s", sheetName, "A:A");
+    String range = getRangeOfUsernameColumn(sheetName);
     log.debug("Finding the last row in this range {} of spreadsheetId {}", range, spreadsheetId);
     ValueRange valueRange =
         sheetsService.spreadsheets().values().get(spreadsheetId, range).execute();
@@ -109,8 +109,12 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
     return lastRow + 1;
   }
 
+  private static String getRangeOfUsernameColumn(String sheetName) {
+    return String.format("'%s'!%s", sheetName, "A:A");
+  }
+
   private @NotNull Integer searchUser(String sheetName, String username) throws IOException {
-    String range = String.format("'%s'!%s", sheetName, "A:A");
+    String range = getRangeOfUsernameColumn(sheetName);
     ValueRange result = sheetsService.spreadsheets().values().get(spreadsheetId, range).execute();
     Integer userRowNum = null;
     if (CollectionUtils.isEmpty(result.getValues())) { // no user yet

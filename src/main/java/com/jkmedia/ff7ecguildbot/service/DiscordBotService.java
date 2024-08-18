@@ -76,6 +76,10 @@ public class DiscordBotService {
                           Permission.MANAGE_CHANNEL, Permission.MODERATE_MEMBERS))
                   .addOptions(usernameOption, stageOption, percentageOption))
           .queue();
+
+      jda.upsertCommand(SlashCommand.ATTEMPT_LEFT.getValue(), "Report how many remaining attempts that you have")
+              .addOptions(stageOption, percentageOption, attemptUsedOption)
+              .queue();
     } catch (Exception e) {
       log.error("", e);
     }

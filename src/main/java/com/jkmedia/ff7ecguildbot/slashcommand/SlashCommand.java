@@ -12,6 +12,7 @@ public enum SlashCommand {
   CHANGE_SPREADSHEET("change-spreadsheet"),
   MOCK("mock"),
   REAL_BATTLE("real-battle"),
+  ATTEMPT_LEFT("attempt-left"),
   UNKNOWN("Unknown");
 
   private final String value;

@@ -2,6 +2,7 @@ package com.jkmedia.ff7ecguildbot.slashcommand.handler;
 
 import com.jkmedia.ff7ecguildbot.service.GoogleSheetsService;
 import com.jkmedia.ff7ecguildbot.slashcommand.SlashCommand;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -20,6 +21,6 @@ public class ChangeSpreadsheetHandlerImpl implements SlashCommandHandler {
 
   @Override
   public void handleEvent(SlashCommandInteractionEvent event) {
-    googleSheetsService.changeSpreadsheet(event.getOption("spreadsheetId").getAsString());
+    googleSheetsService.changeSpreadsheet(Objects.requireNonNull(event.getOption("spreadsheetId")).getAsString());
   }
 }

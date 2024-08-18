@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Slf4j
 @Component
 public class MockReportByAdminHandlerImpl extends MockReportHandlerImpl {
@@ -23,7 +25,7 @@ public class MockReportByAdminHandlerImpl extends MockReportHandlerImpl {
 
   @Override
   public void handleEvent(SlashCommandInteractionEvent event) throws CommandHandlingException {
-    String username = event.getOption(Option.USERNAME.getValue()).getAsString();
+    String username = Objects.requireNonNull(event.getOption(Option.USERNAME.getValue())).getAsString();
     doHandle(username, event);
   }
 }
