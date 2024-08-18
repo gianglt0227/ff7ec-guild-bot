@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum SlashCommand {
   ADMIN_MOCK("admin-mock"),
-  ADMIN_REAL_BATTLE("real-battle"),
+  ADMIN_REAL_BATTLE("admin-real-battle"),
   CHANGE_SPREADSHEET("change-spreadsheet"),
   MOCK("mock"),
   REAL_BATTLE("real-battle"),

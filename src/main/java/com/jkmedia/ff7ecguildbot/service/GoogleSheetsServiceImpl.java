@@ -26,12 +26,13 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   private static final String REAL_BATTLE_SHEET = "Real Battle";
   private static final String MOCK_BATTLE_HISTORY_SHEET = "Mock Battle History";
   private static final String REAL_BATTLE_HISTORY_SHEET = "Real Battle History";
+  private static final String ATTEMPT_LEFT_SHEET = "Attempt Left";
   private final DateTimeFormatter dateTimeFormatter =
       DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss");
 
   @Override
   public void updateMockBattle(String username, int stage, double percentage) throws IOException {
-    Integer userRowNum = searchUser(username);
+    Integer userRowNum = searchUser(MOCK_BATTLE_SHEET, username);
     String stageRange = GoogleSheetUtil.columnNumberToLetter(stage + 1) + userRowNum;
     String time = dateTimeFormatter.format(LocalDateTime.now());
 
@@ -54,7 +55,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   @Override
   public void updateRealBattle(String username, int stage, double percentage, Integer attemptLeft)
       throws IOException {
-    Integer userRowNum = searchUser(username);
+    Integer userRowNum = searchUser(REAL_BATTLE_SHEET, username);
     String time = dateTimeFormatter.format(LocalDateTime.now());
     String stageRange = GoogleSheetUtil.columnNumberToLetter(stage + 1) + userRowNum;
 
@@ -76,6 +77,26 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
     updateCell(REAL_BATTLE_HISTORY_SHEET, "E" + rowNumToInsert, time);
   }
 
+  @Override
+  public void changeSpreadsheet(String newSpreadsheetId) {
+    this.spreadsheetId = newSpreadsheetId;
+  }
+
+  @Override
+  public void updateAttemptLeft(String username, int attemptLeft) throws IOException {
+    Integer userRowNum = searchUser(ATTEMPT_LEFT_SHEET, username);
+    String time = dateTimeFormatter.format(LocalDateTime.now());
+
+    updateCell(ATTEMPT_LEFT_SHEET, "A" + userRowNum, username);
+    updateCell(ATTEMPT_LEFT_SHEET, "B" + userRowNum, attemptLeft);
+    updateCell(ATTEMPT_LEFT_SHEET, "C" + userRowNum, time);
+  }
+
+  @Override
+  public void recommendStageAssignment() {
+    throw new UnsupportedOperationException();
+  }
+
   private int findLastRowNum(String sheetName) throws IOException {
     String range = String.format("'%s'!%s", sheetName, "A:A");
     log.debug("Finding the last row in this range {} of spreadsheetId {}", range, spreadsheetId);
@@ -88,9 +109,9 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
     return lastRow + 1;
   }
 
-  private @NotNull Integer searchUser(String username) throws IOException {
-    ValueRange result =
-        sheetsService.spreadsheets().values().get(spreadsheetId, "A2:A31").execute();
+  private @NotNull Integer searchUser(String sheetName, String username) throws IOException {
+    String range = String.format("'%s'!%s", sheetName, "A:A");
+    ValueRange result = sheetsService.spreadsheets().values().get(spreadsheetId, range).execute();
     Integer userRowNum = null;
     if (CollectionUtils.isEmpty(result.getValues())) { // no user yet
       userRowNum = 2;
@@ -123,15 +144,5 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
             new ValueRange().setValues(List.of(Collections.singletonList(value))))
         .setValueInputOption("USER_ENTERED")
         .execute();
-  }
-
-  @Override
-  public void changeSpreadsheet(String newSpreadsheetId) {
-    this.spreadsheetId = newSpreadsheetId;
-  }
-
-  @Override
-  public void recommendStageAssignment() {
-    throw new UnsupportedOperationException();
   }
 }

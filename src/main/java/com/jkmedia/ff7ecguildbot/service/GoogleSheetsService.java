@@ -16,5 +16,7 @@ public interface GoogleSheetsService {
 
   void changeSpreadsheet(String newSpreadsheetId);
 
+  void updateAttemptLeft(String username, int attemptLeft) throws IOException;
+
   void recommendStageAssignment();
 }

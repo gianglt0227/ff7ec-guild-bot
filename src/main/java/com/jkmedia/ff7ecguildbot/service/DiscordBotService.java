@@ -56,9 +56,9 @@ public class DiscordBotService {
           new OptionData(
               OptionType.INTEGER,
               Option.ATTEMPT_LEFT.getValue(),
-              "How many attempt did you used?",
+              "How many attempt do you have left?",
               true);
-      attemptUsedOption.setMinValue(1).setMaxValue(3);
+      attemptUsedOption.setMinValue(0).setMaxValue(3);
 
       jda.upsertCommand(SlashCommand.MOCK.getValue(), "Submit mock battle result")
           .addOptions(stageOption, percentageOption)
