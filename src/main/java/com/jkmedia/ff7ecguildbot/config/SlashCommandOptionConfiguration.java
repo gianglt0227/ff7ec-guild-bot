@@ -13,7 +13,7 @@ public class SlashCommandOptionConfiguration {
   public OptionData stageOption() {
     OptionData stageOption =
         new OptionData(
-            OptionType.INTEGER, Option.STAGE.getValue(), "Stage of the mock battle (1 - 5)", true);
+            OptionType.INTEGER, Option.STAGE.getValue(), "Which stage did you try (1 - 5)?", true);
     stageOption.setMinValue(1).setMaxValue(5);
     return stageOption;
   }
