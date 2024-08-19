@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AttemptLeftHandlerImpl implements SlashCommandHandler {
   private final GoogleSheetsService googleSheetsService;
+  private final OptionData attemptLeftOption;
 
   @Override
   public SlashCommand supportedCommand() {
@@ -29,7 +30,7 @@ public class AttemptLeftHandlerImpl implements SlashCommandHandler {
 
   @Override
   public List<OptionData> options() {
-    return List.of();
+    return List.of(attemptLeftOption);
   }
 
   @Override

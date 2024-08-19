@@ -14,26 +14,27 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class MockReportByAdminHandlerImpl extends MockReportHandlerImpl {
+public class RealBattleReportByAdminHandlerImpl extends RealBattleReportHandlerImpl {
   private final OptionData usernameOption;
 
-  public MockReportByAdminHandlerImpl(
+  public RealBattleReportByAdminHandlerImpl(
       GoogleSheetsService googleSheetsService,
       OptionData stageOption,
       OptionData percentageOption,
+      OptionData attemptLeftOption,
       OptionData usernameOption) {
-    super(googleSheetsService, stageOption, percentageOption);
+    super(googleSheetsService, stageOption, percentageOption, attemptLeftOption);
     this.usernameOption = usernameOption;
   }
 
   @Override
   public SlashCommand supportedCommand() {
-    return SlashCommand.ADMIN_MOCK;
+    return SlashCommand.ADMIN_REAL_BATTLE;
   }
 
   @Override
   public List<OptionData> options() {
-    return List.of(usernameOption, stageOption, percentageOption);
+    return List.of(stageOption, percentageOption, usernameOption);
   }
 
   @Override

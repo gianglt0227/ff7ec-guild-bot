@@ -6,12 +6,11 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class ChangeSpreadsheetHandlerImpl implements SlashCommandHandler {
   private final GoogleSheetsService googleSheetsService;
@@ -23,12 +22,17 @@ public class ChangeSpreadsheetHandlerImpl implements SlashCommandHandler {
 
   @Override
   public String description() {
-    return "";
+    return "Change the spreadsheetId";
   }
 
   @Override
   public List<OptionData> options() {
     return List.of();
+  }
+
+  @Override
+  public List<Permission> permissions() {
+    return List.of(Permission.MANAGE_CHANNEL, Permission.MODERATE_MEMBERS);
   }
 
   @Override
