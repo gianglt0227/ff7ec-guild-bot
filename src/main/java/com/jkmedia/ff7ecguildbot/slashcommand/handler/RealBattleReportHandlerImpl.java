@@ -46,13 +46,10 @@ public class RealBattleReportHandlerImpl implements SlashCommandHandler {
       throws CommandHandlingException {
     int stage = getStage(event);
     double percentage = getPercentage(event);
-    int attemptLeft =
-        Objects.requireNonNull(event.getOption(Option.ATTEMPT_LEFT.getValue())).getAsInt();
 
     log.debug("received command: /mock {} {} from user {}", stage, percentage, username);
     try {
-      googleSheetsService.insertRealBattleHistory(username, stage, percentage, attemptLeft);
-      googleSheetsService.updateAttemptLeft(username, attemptLeft);
+      googleSheetsService.insertRealBattleHistory(username, stage, percentage);
       event.getHook().sendMessage("Updated the Mock battle sheet!").setEphemeral(true).queue();
     } catch (Exception e) {
       log.error("", e);

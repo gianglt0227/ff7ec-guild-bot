@@ -53,7 +53,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   }
 
   @Override
-  public void updateRealBattle(String username, int stage, double percentage, Integer attemptLeft)
+  public void updateRealBattle(String username, int stage, double percentage)
       throws IOException {
     Integer userRowNum = searchUser(REAL_BATTLE_SHEET, username);
     String time = dateTimeFormatter.format(LocalDateTime.now());
@@ -61,20 +61,18 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
 
     updateCell(REAL_BATTLE_SHEET, "A" + userRowNum, username);
     updateCell(REAL_BATTLE_SHEET, stageRange, percentage);
-    updateCell(REAL_BATTLE_SHEET, "G" + userRowNum, attemptLeft);
-    updateCell(REAL_BATTLE_SHEET, "H" + userRowNum, time);
+    updateCell(REAL_BATTLE_SHEET, "G" + userRowNum, time);
   }
 
   @Override
   public void insertRealBattleHistory(
-      String username, int stage, double percentage, Integer attemptLeft) throws IOException {
+      String username, int stage, double percentage) throws IOException {
     int rowNumToInsert = findLastRowNum(REAL_BATTLE_HISTORY_SHEET) + 1;
     String time = dateTimeFormatter.format(LocalDateTime.now());
     updateCell(REAL_BATTLE_HISTORY_SHEET, "A" + rowNumToInsert, username);
     updateCell(REAL_BATTLE_HISTORY_SHEET, "B" + rowNumToInsert, stage);
     updateCell(REAL_BATTLE_HISTORY_SHEET, "C" + rowNumToInsert, percentage);
-    updateCell(REAL_BATTLE_HISTORY_SHEET, "D" + rowNumToInsert, attemptLeft);
-    updateCell(REAL_BATTLE_HISTORY_SHEET, "E" + rowNumToInsert, time);
+    updateCell(REAL_BATTLE_HISTORY_SHEET, "D" + rowNumToInsert, time);
   }
 
   @Override

@@ -8,11 +8,9 @@ public interface GoogleSheetsService {
 
   void insertMockBattleHistory(String username, int stage, double percentage) throws IOException;
 
-  void updateRealBattle(String username, int stage, double percentage, Integer attemptLeft)
-      throws IOException;
+  void updateRealBattle(String username, int stage, double percentage) throws IOException;
 
-  void insertRealBattleHistory(String username, int stage, double percentage, Integer attemptLeft)
-      throws IOException;
+  void insertRealBattleHistory(String username, int stage, double percentage) throws IOException;
 
   void changeSpreadsheet(String newSpreadsheetId);
 
