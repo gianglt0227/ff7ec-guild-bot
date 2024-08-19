@@ -24,7 +24,7 @@ public class SlashCommandOptionConfiguration {
         new OptionData(
             OptionType.NUMBER,
             Option.PERCENT_HP_REDUCED.getValue(),
-            "Percentage of boss HP reduced. 2 decimal places only. Eg: 12.26",
+            "%HP reduced on a SINGLE attempt. 2 decimal places only. Eg: 12.26",
             true);
     percentageOption.setMinValue(0).setMaxValue(100);
     return percentageOption;

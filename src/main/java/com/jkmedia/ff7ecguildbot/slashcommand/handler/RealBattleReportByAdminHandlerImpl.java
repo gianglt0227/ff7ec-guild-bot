@@ -21,9 +21,8 @@ public class RealBattleReportByAdminHandlerImpl extends RealBattleReportHandlerI
       GoogleSheetsService googleSheetsService,
       OptionData stageOption,
       OptionData percentageOption,
-      OptionData attemptLeftOption,
       OptionData usernameOption) {
-    super(googleSheetsService, stageOption, percentageOption, attemptLeftOption);
+    super(googleSheetsService, stageOption, percentageOption);
     this.usernameOption = usernameOption;
   }
 
@@ -34,7 +33,7 @@ public class RealBattleReportByAdminHandlerImpl extends RealBattleReportHandlerI
 
   @Override
   public List<OptionData> options() {
-    return List.of(stageOption, percentageOption, usernameOption);
+    return List.of(usernameOption, stageOption, percentageOption);
   }
 
   @Override

@@ -20,7 +20,6 @@ public class RealBattleReportHandlerImpl implements SlashCommandHandler {
   private final GoogleSheetsService googleSheetsService;
   protected final OptionData stageOption;
   protected final OptionData percentageOption;
-  protected final OptionData attemptLeftOption;
 
   @Override
   public SlashCommand supportedCommand() {
@@ -34,7 +33,7 @@ public class RealBattleReportHandlerImpl implements SlashCommandHandler {
 
   @Override
   public List<OptionData> options() {
-    return List.of(stageOption, percentageOption, attemptLeftOption);
+    return List.of(stageOption, percentageOption);
   }
 
   @Override
