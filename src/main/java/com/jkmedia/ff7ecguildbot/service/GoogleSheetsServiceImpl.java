@@ -116,9 +116,11 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   private @NotNull Integer searchUser(String sheetName, String username) throws IOException {
     String range = getRangeOfUsernameColumn(sheetName);
     ValueRange result = sheetsService.spreadsheets().values().get(spreadsheetId, range).execute();
-    int userRowNum = 2; // default if there is no user yet
+    Integer userRowNum = null;
 
-    if (!CollectionUtils.isEmpty(result.getValues())) {
+    if (CollectionUtils.isEmpty(result.getValues())) {
+      userRowNum = 2; // default if there is no user yet
+    } else {
       int currentRow = 1; // first row is a header
       for (List<Object> row : result.getValues()) {
         Object cell = row.get(0);
@@ -127,6 +129,9 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
           break;
         }
         currentRow++;
+      }
+      if (userRowNum == null) {
+        userRowNum = currentRow;
       }
       log.info("userRowNum: {}, currentRow: {}", userRowNum, currentRow);
     }
