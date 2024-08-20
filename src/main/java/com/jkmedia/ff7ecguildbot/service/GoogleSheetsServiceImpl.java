@@ -3,6 +3,7 @@ package com.jkmedia.ff7ecguildbot.service;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.*;
 import com.jkmedia.ff7ecguildbot.GoogleSheetUtil;
+import com.jkmedia.ff7ecguildbot.slashcommand.BattleType;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,48 +32,37 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
       DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss");
 
   @Override
-  public void updateMockBattle(String username, int stage, double percentage) throws IOException {
-    Integer userRowNum = searchUser(MOCK_BATTLE_SHEET, username);
+  public void updateBattle(BattleType battleType, String username, int stage, double percentage)
+      throws IOException {
+    String sheetName =
+        switch (battleType) {
+          case MOCK -> MOCK_BATTLE_SHEET;
+          case REAL -> REAL_BATTLE_SHEET;
+        };
+    Integer userRowNum = searchUser(sheetName, username);
     String stageRange = GoogleSheetUtil.columnNumberToLetter(stage + 1) + userRowNum;
     String time = dateTimeFormatter.format(LocalDateTime.now());
 
-    updateCell(MOCK_BATTLE_SHEET, "A" + userRowNum, username);
-    updateCell(MOCK_BATTLE_SHEET, stageRange, percentage);
-    updateCell(MOCK_BATTLE_SHEET, "G" + userRowNum, time);
+    updateCell(sheetName, "A" + userRowNum, username);
+    updateCell(sheetName, stageRange, percentage);
+    updateCell(sheetName, "G" + userRowNum, time);
   }
 
   @Override
-  public void insertMockBattleHistory(String username, int stage, double percentage)
-      throws IOException {
-    int rowNumToInsert = findLastRowNum(MOCK_BATTLE_HISTORY_SHEET) + 1;
+  public void insertBattleHistory(
+      BattleType battleType, String username, int stage, double percentage) throws IOException {
+    String sheetName =
+        switch (battleType) {
+          case MOCK -> MOCK_BATTLE_HISTORY_SHEET;
+          case REAL -> REAL_BATTLE_HISTORY_SHEET;
+        };
+    int rowNumToInsert = findLastRowNum(sheetName) + 1;
     String time = dateTimeFormatter.format(LocalDateTime.now());
-    updateCell(MOCK_BATTLE_HISTORY_SHEET, "A" + rowNumToInsert, username);
-    updateCell(MOCK_BATTLE_HISTORY_SHEET, "B" + rowNumToInsert, stage);
-    updateCell(MOCK_BATTLE_HISTORY_SHEET, "C" + rowNumToInsert, percentage);
-    updateCell(MOCK_BATTLE_HISTORY_SHEET, "D" + rowNumToInsert, time);
-  }
 
-  @Override
-  public void updateRealBattle(String username, int stage, double percentage)
-      throws IOException {
-    Integer userRowNum = searchUser(REAL_BATTLE_SHEET, username);
-    String time = dateTimeFormatter.format(LocalDateTime.now());
-    String stageRange = GoogleSheetUtil.columnNumberToLetter(stage + 1) + userRowNum;
-
-    updateCell(REAL_BATTLE_SHEET, "A" + userRowNum, username);
-    updateCell(REAL_BATTLE_SHEET, stageRange, percentage);
-    updateCell(REAL_BATTLE_SHEET, "G" + userRowNum, time);
-  }
-
-  @Override
-  public void insertRealBattleHistory(
-      String username, int stage, double percentage) throws IOException {
-    int rowNumToInsert = findLastRowNum(REAL_BATTLE_HISTORY_SHEET) + 1;
-    String time = dateTimeFormatter.format(LocalDateTime.now());
-    updateCell(REAL_BATTLE_HISTORY_SHEET, "A" + rowNumToInsert, username);
-    updateCell(REAL_BATTLE_HISTORY_SHEET, "B" + rowNumToInsert, stage);
-    updateCell(REAL_BATTLE_HISTORY_SHEET, "C" + rowNumToInsert, percentage);
-    updateCell(REAL_BATTLE_HISTORY_SHEET, "D" + rowNumToInsert, time);
+    updateCell(sheetName, "A" + rowNumToInsert, username);
+    updateCell(sheetName, "B" + rowNumToInsert, stage);
+    updateCell(sheetName, "C" + rowNumToInsert, percentage);
+    updateCell(sheetName, "D" + rowNumToInsert, time);
   }
 
   @Override

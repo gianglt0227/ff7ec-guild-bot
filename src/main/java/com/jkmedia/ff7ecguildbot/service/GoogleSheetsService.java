@@ -1,16 +1,15 @@
 package com.jkmedia.ff7ecguildbot.service;
 
+import com.jkmedia.ff7ecguildbot.slashcommand.BattleType;
 import java.io.IOException;
 
 public interface GoogleSheetsService {
 
-  void updateMockBattle(String username, int stage, double percentage) throws IOException;
+  void updateBattle(BattleType battleType, String username, int stage, double percentage)
+      throws IOException;
 
-  void insertMockBattleHistory(String username, int stage, double percentage) throws IOException;
-
-  void updateRealBattle(String username, int stage, double percentage) throws IOException;
-
-  void insertRealBattleHistory(String username, int stage, double percentage) throws IOException;
+  void insertBattleHistory(BattleType battleType, String username, int stage, double percentage)
+      throws IOException;
 
   void changeSpreadsheet(String newSpreadsheetId);
 

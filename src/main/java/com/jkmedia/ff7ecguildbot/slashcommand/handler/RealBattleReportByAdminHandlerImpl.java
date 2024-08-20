@@ -1,6 +1,7 @@
 package com.jkmedia.ff7ecguildbot.slashcommand.handler;
 
 import com.jkmedia.ff7ecguildbot.service.GoogleSheetsService;
+import com.jkmedia.ff7ecguildbot.slashcommand.BattleType;
 import com.jkmedia.ff7ecguildbot.slashcommand.CommandHandlingException;
 import com.jkmedia.ff7ecguildbot.slashcommand.Option;
 import com.jkmedia.ff7ecguildbot.slashcommand.SlashCommand;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class RealBattleReportByAdminHandlerImpl extends RealBattleReportHandlerImpl {
+public class RealBattleReportByAdminHandlerImpl extends AbstractBattleReportHandler {
   private final OptionData usernameOption;
 
   public RealBattleReportByAdminHandlerImpl(
@@ -45,7 +46,7 @@ public class RealBattleReportByAdminHandlerImpl extends RealBattleReportHandlerI
   public void handleEvent(SlashCommandInteractionEvent event) throws CommandHandlingException {
     String username =
         Objects.requireNonNull(event.getOption(Option.USERNAME.getValue())).getAsString();
-    doHandle(username, event);
+    doHandle(BattleType.REAL, username, event);
   }
 
   @Override
