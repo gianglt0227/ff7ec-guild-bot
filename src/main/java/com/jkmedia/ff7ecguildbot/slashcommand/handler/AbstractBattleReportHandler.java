@@ -59,6 +59,6 @@ public abstract class AbstractBattleReportHandler implements SlashCommandHandler
       throw new CommandHandlingException(
           "Invalid percentage, must be an number from 0 to 100, and max 2 decimal places only. Eg: 22.34");
     }
-    return percentage;
+    return percentage / 100;
   }
 }
