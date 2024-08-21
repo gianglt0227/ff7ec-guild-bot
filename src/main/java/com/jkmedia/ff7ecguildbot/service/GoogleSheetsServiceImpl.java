@@ -7,6 +7,7 @@ import com.jkmedia.ff7ecguildbot.slashcommand.BattleType;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -22,14 +23,21 @@ import org.springframework.stereotype.Service;
 public class GoogleSheetsServiceImpl implements GoogleSheetsService {
 
   private final Sheets sheetsService;
-  private String spreadsheetId = "1jk9QMymcE_cg4m-b4rhKkSO0upOM4_mU2ggPhksfY_o";
-  private static final String MOCK_BATTLE_SHEET = "Mock Battle";
-  private static final String REAL_BATTLE_SHEET = "Real Battle";
-  private static final String MOCK_BATTLE_HISTORY_SHEET = "Mock Battle History";
-  private static final String REAL_BATTLE_HISTORY_SHEET = "Real Battle History";
-  private static final String ATTEMPT_LEFT_SHEET = "Attempt Left";
   private final DateTimeFormatter dateTimeFormatter =
       DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss");
+  private String spreadsheetId = "1jk9QMymcE_cg4m-b4rhKkSO0upOM4_mU2ggPhksfY_o";
+
+  private static final String MOCK_BATTLE_SHEET = "Mock Battle";
+  private static final String MOCK_BATTLE_HISTORY_SHEET = "Mock Battle History";
+  private static final String REAL_BATTLE_SHEET = "Real Battle";
+  private static final String REAL_BATTLE_HISTORY_SHEET = "Real Battle History";
+  private static final String ATTEMPT_LEFT_SHEET = "Attempt Left";
+
+  private static final Integer MOCK_BATTLE_SHEET_INDEX = 1448596833;
+  private static final Integer MOCK_BATTLE_HISTORY_SHEET_INDEX = 277694400;
+  private static final Integer REAL_BATTLE_SHEET_INDEX = 1815922811;
+  private static final Integer REAL_BATTLE_HISTORY_SHEET_INDEX = 992853521;
+  private static final Integer ATTEMPT_LEFT_SHEET_INDEX = 1867581291;
 
   @Override
   public void updateBattle(BattleType battleType, String username, int stage, double percentage)
@@ -56,6 +64,12 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
           case MOCK -> MOCK_BATTLE_HISTORY_SHEET;
           case REAL -> REAL_BATTLE_HISTORY_SHEET;
         };
+    Integer sheetIndex =
+        switch (battleType) {
+          case MOCK -> MOCK_BATTLE_HISTORY_SHEET_INDEX;
+          case REAL -> REAL_BATTLE_HISTORY_SHEET_INDEX;
+        };
+
     int rowNumToInsert = findLastRowNum(sheetName) + 1;
     String time = dateTimeFormatter.format(LocalDateTime.now());
 
@@ -63,6 +77,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
     updateCell(sheetName, "B" + rowNumToInsert, stage);
     updateCell(sheetName, "C" + rowNumToInsert, percentage);
     updateCell(sheetName, "D" + rowNumToInsert, time);
+    sort(sheetIndex, 0, 1, 4, 1030, new SortSpec().setDimensionIndex(3).setSortOrder("DESCENDING"));
   }
 
   @Override
@@ -78,6 +93,34 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
     updateCell(ATTEMPT_LEFT_SHEET, "A" + userRowNum, username);
     updateCell(ATTEMPT_LEFT_SHEET, "B" + userRowNum, attemptLeft);
     updateCell(ATTEMPT_LEFT_SHEET, "C" + userRowNum, time);
+  }
+
+  @Override
+  public void sort(
+      Integer sheetId,
+      Integer startColumnIndex,
+      Integer startRowIndex,
+      Integer endColumnIndex,
+      Integer endRowIndex,
+      SortSpec... sortSpecs)
+      throws IOException {
+    GridRange gridRange =
+        new GridRange()
+            .setSheetId(sheetId)
+            .setStartColumnIndex(startColumnIndex)
+            .setStartRowIndex(startRowIndex)
+            .setEndColumnIndex(endColumnIndex)
+            .setEndRowIndex(endRowIndex);
+    SortRangeRequest sortRangeRequest =
+        new SortRangeRequest().setRange(gridRange).setSortSpecs(Arrays.asList(sortSpecs));
+    Request request = new Request().setSortRange(sortRangeRequest);
+    BatchUpdateSpreadsheetRequest batchUpdateSpreadsheetRequest =
+        new BatchUpdateSpreadsheetRequest().setRequests(List.of(request));
+
+    sheetsService
+        .spreadsheets()
+        .batchUpdate(spreadsheetId, batchUpdateSpreadsheetRequest)
+        .execute();
   }
 
   @Override
