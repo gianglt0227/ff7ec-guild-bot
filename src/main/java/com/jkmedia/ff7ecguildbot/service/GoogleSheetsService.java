@@ -26,4 +26,6 @@ public interface GoogleSheetsService {
       throws IOException;
 
   void recommendStageAssignment();
+
+  void restartAttempts() throws IOException;
 }

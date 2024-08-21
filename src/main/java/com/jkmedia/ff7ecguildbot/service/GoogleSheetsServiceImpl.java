@@ -2,6 +2,7 @@ package com.jkmedia.ff7ecguildbot.service;
 
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.*;
+import com.google.common.util.concurrent.RateLimiter;
 import com.jkmedia.ff7ecguildbot.GoogleSheetUtil;
 import com.jkmedia.ff7ecguildbot.slashcommand.BattleType;
 import java.io.*;
@@ -38,6 +39,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   private static final Integer REAL_BATTLE_SHEET_INDEX = 1815922811;
   private static final Integer REAL_BATTLE_HISTORY_SHEET_INDEX = 992853521;
   private static final Integer ATTEMPT_LEFT_SHEET_INDEX = 1867581291;
+  private final RateLimiter rateLimiter = RateLimiter.create(1);
 
   @Override
   public void updateBattle(BattleType battleType, String username, int stage, double percentage)
@@ -93,6 +95,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
     updateCell(ATTEMPT_LEFT_SHEET, "A" + userRowNum, username);
     updateCell(ATTEMPT_LEFT_SHEET, "B" + userRowNum, attemptLeft);
     updateCell(ATTEMPT_LEFT_SHEET, "C" + userRowNum, time);
+    updateCell(ATTEMPT_LEFT_SHEET, "D" + userRowNum, "");
   }
 
   @Override
@@ -126,6 +129,17 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   @Override
   public void recommendStageAssignment() {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void restartAttempts() throws IOException {
+    int lastRowNum = findLastRowNum(ATTEMPT_LEFT_SHEET);
+    String now = dateTimeFormatter.format(LocalDateTime.now());
+    for (int i = 2; i <= lastRowNum; i++) {
+      updateCell(ATTEMPT_LEFT_SHEET, "B" + i, 3);
+      updateCell(ATTEMPT_LEFT_SHEET, "C" + i, now);
+      updateCell(ATTEMPT_LEFT_SHEET, "D" + i, "Reset by bot");
+    }
   }
 
   private int findLastRowNum(String sheetName) throws IOException {
@@ -170,6 +184,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   }
 
   private void updateCell(String sheetName, String range, Object value) throws IOException {
+    rateLimiter.acquire();
     sheetsService
         .spreadsheets()
         .values()
