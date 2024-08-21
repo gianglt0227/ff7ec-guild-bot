@@ -136,7 +136,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
     int lastRowNum = findLastRowNum(ATTEMPT_LEFT_SHEET);
     String now = dateTimeFormatter.format(LocalDateTime.now());
     for (int i = 2; i <= lastRowNum; i++) {
-      updateCell(ATTEMPT_LEFT_SHEET, "B" + i, 3);
+      updateCell(ATTEMPT_LEFT_SHEET, "B" + i, "");
       updateCell(ATTEMPT_LEFT_SHEET, "C" + i, now);
       updateCell(ATTEMPT_LEFT_SHEET, "D" + i, "Reset by bot");
     }
