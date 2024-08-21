@@ -15,9 +15,7 @@ import org.springframework.stereotype.Component;
 public class RealBattleReportHandlerImpl extends AbstractBattleReportHandler {
 
   protected RealBattleReportHandlerImpl(
-      GoogleSheetsService googleSheetsService,
-      OptionData stageOption,
-      OptionData percentageOption) {
+      GoogleSheetsService googleSheetsService, OptionData stageOption, OptionData percentageOption) {
     super(googleSheetsService, stageOption, percentageOption);
   }
 

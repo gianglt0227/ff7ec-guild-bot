@@ -11,16 +11,14 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class SlashCommandHandlerFactory {
-  protected static final Map<SlashCommand, SlashCommandHandler> HANDLER_CACHE =
-      new EnumMap<>(SlashCommand.class);
+  protected static final Map<SlashCommand, SlashCommandHandler> HANDLER_CACHE = new EnumMap<>(SlashCommand.class);
 
   private final List<SlashCommandHandler> slashCommandHandlers;
 
   @PostConstruct
   void initCache() {
     slashCommandHandlers.forEach(
-        slashCommandHandler ->
-            HANDLER_CACHE.put(slashCommandHandler.supportedCommand(), slashCommandHandler));
+        slashCommandHandler -> HANDLER_CACHE.put(slashCommandHandler.supportedCommand(), slashCommandHandler));
   }
 
   public SlashCommandHandler getSlashCommandHandler(String command) {

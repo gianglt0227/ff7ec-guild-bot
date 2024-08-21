@@ -46,21 +46,18 @@ public class BotConfiguration {
       @Value("${google.credential}") String googleCredential)
       throws IOException {
     GoogleClientSecrets clientSecrets =
-        GoogleClientSecrets.load(
-            jsonFactory, new InputStreamReader(IOUtils.toInputStream(googleCredential)));
+        GoogleClientSecrets.load(jsonFactory, new InputStreamReader(IOUtils.toInputStream(googleCredential)));
 
-    GoogleAuthorizationCodeFlow flow =
-        new GoogleAuthorizationCodeFlow.Builder(
-                netHttpTransport, jsonFactory, clientSecrets, SCOPES)
-            .setDataStoreFactory(new MemoryDataStoreFactory())
-            .setAccessType("offline")
-            .build();
+    GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+            netHttpTransport, jsonFactory, clientSecrets, SCOPES)
+        .setDataStoreFactory(new MemoryDataStoreFactory())
+        .setAccessType("offline")
+        .build();
     return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
   }
 
   @Bean
-  public Sheets sheet(
-      NetHttpTransport netHttpTransport, JsonFactory jsonFactory, Credential googleCredential) {
+  public Sheets sheet(NetHttpTransport netHttpTransport, JsonFactory jsonFactory, Credential googleCredential) {
     return new Sheets.Builder(netHttpTransport, jsonFactory, googleCredential)
         .setApplicationName(APPLICATION_NAME)
         .build();

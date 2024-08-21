@@ -6,11 +6,9 @@ import java.io.IOException;
 
 public interface GoogleSheetsService {
 
-  void updateBattle(BattleType battleType, String username, int stage, double percentage)
-      throws IOException;
+  void updateBattle(BattleType battleType, String username, int stage, double percentage) throws IOException;
 
-  void insertBattleHistory(BattleType battleType, String username, int stage, double percentage)
-      throws IOException;
+  void insertBattleHistory(BattleType battleType, String username, int stage, double percentage) throws IOException;
 
   void changeSpreadsheet(String newSpreadsheetId);
 

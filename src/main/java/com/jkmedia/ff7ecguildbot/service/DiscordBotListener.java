@@ -29,8 +29,7 @@ public class DiscordBotListener extends ListenerAdapter {
 
     } catch (Exception e) {
       log.error("Error while trying to handle slash command {}", event.getName(), e);
-      event
-          .getHook()
+      event.getHook()
           .sendMessage("Error while trying to handle slash command! Please report to guild admin")
           .setEphemeral(true)
           .queue();

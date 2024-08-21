@@ -11,8 +11,7 @@ public class GoogleSheetUtil {
     int tempNumber = inputColumnNumber;
     while (tempNumber > 0) {
       int position = tempNumber % base;
-      outputColumnName =
-          (position == 0 ? 'Z' : chars.charAt(position > 0 ? position - 1 : 0)) + outputColumnName;
+      outputColumnName = (position == 0 ? 'Z' : chars.charAt(position > 0 ? position - 1 : 0)) + outputColumnName;
       tempNumber = (tempNumber - 1) / base;
     }
     return outputColumnName;

@@ -14,9 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MockReportHandlerImpl extends AbstractBattleReportHandler {
   public MockReportHandlerImpl(
-      GoogleSheetsService googleSheetsService,
-      OptionData stageOption,
-      OptionData percentageOption) {
+      GoogleSheetsService googleSheetsService, OptionData stageOption, OptionData percentageOption) {
     super(googleSheetsService, stageOption, percentageOption);
   }
 

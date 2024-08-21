@@ -29,10 +29,8 @@ public class DiscordBotService {
       jda.addEventListener(discordBotListener);
 
       for (SlashCommandHandler slashCommandHandler : slashCommandHandlers) {
-        SlashCommandData commandData =
-            Commands.slash(
-                slashCommandHandler.supportedCommand().getValue(),
-                slashCommandHandler.description());
+        SlashCommandData commandData = Commands.slash(
+            slashCommandHandler.supportedCommand().getValue(), slashCommandHandler.description());
         if (CollectionUtils.isNotEmpty(slashCommandHandler.options())) {
           commandData.addOptions(slashCommandHandler.options());
         }

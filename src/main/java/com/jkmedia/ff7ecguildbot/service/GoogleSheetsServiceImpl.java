@@ -24,8 +24,7 @@ import org.springframework.stereotype.Service;
 public class GoogleSheetsServiceImpl implements GoogleSheetsService {
 
   private final Sheets sheetsService;
-  private final DateTimeFormatter dateTimeFormatter =
-      DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss");
+  private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss");
   private String spreadsheetId = "1jk9QMymcE_cg4m-b4rhKkSO0upOM4_mU2ggPhksfY_o";
 
   private static final String MOCK_BATTLE_SHEET = "Mock Battle";
@@ -42,8 +41,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   private final RateLimiter rateLimiter = RateLimiter.create(1);
 
   @Override
-  public void updateBattle(BattleType battleType, String username, int stage, double percentage)
-      throws IOException {
+  public void updateBattle(BattleType battleType, String username, int stage, double percentage) throws IOException {
     String sheetName =
         switch (battleType) {
           case MOCK -> MOCK_BATTLE_SHEET;
@@ -59,8 +57,8 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   }
 
   @Override
-  public void insertBattleHistory(
-      BattleType battleType, String username, int stage, double percentage) throws IOException {
+  public void insertBattleHistory(BattleType battleType, String username, int stage, double percentage)
+      throws IOException {
     String sheetName =
         switch (battleType) {
           case MOCK -> MOCK_BATTLE_HISTORY_SHEET;
@@ -107,13 +105,12 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
       Integer endRowIndex,
       SortSpec... sortSpecs)
       throws IOException {
-    GridRange gridRange =
-        new GridRange()
-            .setSheetId(sheetId)
-            .setStartColumnIndex(startColumnIndex)
-            .setStartRowIndex(startRowIndex)
-            .setEndColumnIndex(endColumnIndex)
-            .setEndRowIndex(endRowIndex);
+    GridRange gridRange = new GridRange()
+        .setSheetId(sheetId)
+        .setStartColumnIndex(startColumnIndex)
+        .setStartRowIndex(startRowIndex)
+        .setEndColumnIndex(endColumnIndex)
+        .setEndRowIndex(endRowIndex);
     SortRangeRequest sortRangeRequest =
         new SortRangeRequest().setRange(gridRange).setSortSpecs(Arrays.asList(sortSpecs));
     Request request = new Request().setSortRange(sortRangeRequest);
@@ -160,7 +157,8 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
 
   private @NotNull Integer searchUser(String sheetName, String username) throws IOException {
     String range = getRangeOfUsernameColumn(sheetName);
-    ValueRange result = sheetsService.spreadsheets().values().get(spreadsheetId, range).execute();
+    ValueRange result =
+        sheetsService.spreadsheets().values().get(spreadsheetId, range).execute();
     Integer userRowNum = null;
 
     if (CollectionUtils.isEmpty(result.getValues())) {

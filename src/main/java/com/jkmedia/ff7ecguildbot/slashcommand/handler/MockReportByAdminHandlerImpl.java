@@ -44,8 +44,8 @@ public class MockReportByAdminHandlerImpl extends AbstractBattleReportHandler {
 
   @Override
   public void handleEvent(SlashCommandInteractionEvent event) throws CommandHandlingException {
-    String username =
-        Objects.requireNonNull(event.getOption(Option.USERNAME.getValue())).getAsString();
+    String username = Objects.requireNonNull(event.getOption(Option.USERNAME.getValue()))
+        .getAsString();
     doHandle(BattleType.MOCK, username, event);
   }
 

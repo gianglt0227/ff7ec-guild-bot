@@ -14,13 +14,11 @@ public class BattleManagerImpl implements BattleManager {
 
     for (int currentStage = 5; currentStage > 0; currentStage--) {
       int finalCurrentStage = currentStage;
-      List<MockBattleReport> sortedReports =
-          mockBattleReports.stream()
-              .filter(
-                  mockBattleReport ->
-                      Objects.equals(mockBattleReport.getStage(), finalCurrentStage))
-              .sorted(Comparator.comparing(MockBattleReport::getPercentage).reversed())
-              .toList();
+      List<MockBattleReport> sortedReports = mockBattleReports.stream()
+          .filter(mockBattleReport -> Objects.equals(mockBattleReport.getStage(), finalCurrentStage))
+          .sorted(Comparator.comparing(MockBattleReport::getPercentage)
+              .reversed())
+          .toList();
 
       Double currentStagePercent = 0d;
       for (MockBattleReport report : sortedReports) {

@@ -37,13 +37,19 @@ public class AttemptLeftHandlerImpl implements SlashCommandHandler {
   public void handleEvent(SlashCommandInteractionEvent event) {
     try {
       String username = event.getUser().getEffectiveName();
-      int attemptLeft =
-          Objects.requireNonNull(event.getOption(Option.ATTEMPT_LEFT.getValue())).getAsInt();
+      int attemptLeft = Objects.requireNonNull(event.getOption(Option.ATTEMPT_LEFT.getValue()))
+          .getAsInt();
       googleSheetsService.updateAttemptLeft(username, attemptLeft);
-      event.getHook().sendMessage("Thanks for your update!").setEphemeral(true).queue();
+      event.getHook()
+          .sendMessage("Thanks for your update!")
+          .setEphemeral(true)
+          .queue();
     } catch (Exception e) {
       log.error("", e);
-      event.getHook().sendMessage("Failed to update the sheet!").setEphemeral(true).queue();
+      event.getHook()
+          .sendMessage("Failed to update the sheet!")
+          .setEphemeral(true)
+          .queue();
     }
   }
 }
