@@ -34,12 +34,12 @@ public class AttemptLeftHandlerImpl implements SlashCommandHandler {
   }
 
   @Override
-  public void handleEvent(SlashCommandInteractionEvent event) {
+  public void handleEvent(SlashCommandInteractionEvent event, String googleSpreadsheetId) {
     try {
       String username = event.getUser().getEffectiveName();
       int attemptLeft = Objects.requireNonNull(event.getOption(Option.ATTEMPT_LEFT.getValue()))
           .getAsInt();
-      googleSheetsService.updateAttemptLeft(username, attemptLeft);
+      googleSheetsService.updateAttemptLeft(googleSpreadsheetId, username, attemptLeft);
       event.getHook()
           .sendMessage("Thanks for your update!")
           .setEphemeral(true)

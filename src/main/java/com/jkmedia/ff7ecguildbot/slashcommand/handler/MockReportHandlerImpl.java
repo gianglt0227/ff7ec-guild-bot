@@ -34,8 +34,9 @@ public class MockReportHandlerImpl extends AbstractBattleReportHandler {
   }
 
   @Override
-  public void handleEvent(SlashCommandInteractionEvent event) throws CommandHandlingException {
+  public void handleEvent(SlashCommandInteractionEvent event, String googleSpreadsheetId)
+      throws CommandHandlingException {
     String username = event.getUser().getEffectiveName();
-    doHandle(BattleType.MOCK, username, event);
+    doHandle(BattleType.MOCK, username, event, googleSpreadsheetId);
   }
 }

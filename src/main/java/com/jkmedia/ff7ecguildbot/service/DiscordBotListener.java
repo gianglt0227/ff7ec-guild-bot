@@ -1,5 +1,6 @@
 package com.jkmedia.ff7ecguildbot.service;
 
+import com.jkmedia.ff7ecguildbot.object.Guild;
 import com.jkmedia.ff7ecguildbot.slashcommand.CommandHandlingException;
 import com.jkmedia.ff7ecguildbot.slashcommand.handler.SlashCommandHandler;
 import com.jkmedia.ff7ecguildbot.slashcommand.handler.SlashCommandHandlerFactory;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,14 +16,15 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class DiscordBotListener extends ListenerAdapter {
   private final SlashCommandHandlerFactory slashCommandHandlerFactory;
+  private final GuildManagerService guildManagerService;
 
   @Override
-  public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+  public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
     try {
       event.deferReply(true).queue();
       SlashCommandHandler slashCommandHandler =
           slashCommandHandlerFactory.getSlashCommandHandler(event.getName());
-      slashCommandHandler.handleEvent(event);
+      slashCommandHandler.handleEvent(event, getGoodleSpreadsheetId(event));
 
     } catch (CommandHandlingException e) {
       event.getHook().sendMessage(e.getReplyMessage()).setEphemeral(true).queue();
@@ -33,6 +36,16 @@ public class DiscordBotListener extends ListenerAdapter {
           .sendMessage("Error while trying to handle slash command! Please report to guild admin")
           .setEphemeral(true)
           .queue();
+    }
+  }
+
+  private String getGoodleSpreadsheetId(SlashCommandInteractionEvent event) throws CommandHandlingException {
+    long channelId = event.getChannel().getIdLong();
+    Guild guild = guildManagerService.findByChannelId(channelId);
+    if (guild != null) {
+      return guild.getGoogleSpreadsheetId();
+    } else {
+      throw new CommandHandlingException("This bot is not available for this guild");
     }
   }
 }

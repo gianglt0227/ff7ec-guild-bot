@@ -43,10 +43,11 @@ public class RealBattleReportByAdminHandlerImpl extends AbstractBattleReportHand
   }
 
   @Override
-  public void handleEvent(SlashCommandInteractionEvent event) throws CommandHandlingException {
+  public void handleEvent(SlashCommandInteractionEvent event, String googleSpreadsheetId)
+      throws CommandHandlingException {
     String username = Objects.requireNonNull(event.getOption(Option.USERNAME.getValue()))
         .getAsString();
-    doHandle(BattleType.REAL, username, event);
+    doHandle(BattleType.REAL, username, event, googleSpreadsheetId);
   }
 
   @Override

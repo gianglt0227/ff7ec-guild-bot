@@ -18,5 +18,5 @@ public interface SlashCommandHandler {
     return List.of();
   }
 
-  void handleEvent(SlashCommandInteractionEvent event) throws CommandHandlingException;
+  void handleEvent(SlashCommandInteractionEvent event, String googleSpreadsheetId) throws CommandHandlingException;
 }

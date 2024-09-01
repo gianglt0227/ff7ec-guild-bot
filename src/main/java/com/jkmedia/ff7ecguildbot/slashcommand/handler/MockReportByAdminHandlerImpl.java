@@ -43,10 +43,11 @@ public class MockReportByAdminHandlerImpl extends AbstractBattleReportHandler {
   }
 
   @Override
-  public void handleEvent(SlashCommandInteractionEvent event) throws CommandHandlingException {
+  public void handleEvent(SlashCommandInteractionEvent event, String googleSpreadsheetId)
+      throws CommandHandlingException {
     String username = Objects.requireNonNull(event.getOption(Option.USERNAME.getValue()))
         .getAsString();
-    doHandle(BattleType.MOCK, username, event);
+    doHandle(BattleType.MOCK, username, event, googleSpreadsheetId);
   }
 
   @Override

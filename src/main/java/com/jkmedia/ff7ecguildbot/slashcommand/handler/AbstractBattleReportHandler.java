@@ -23,15 +23,16 @@ public abstract class AbstractBattleReportHandler implements SlashCommandHandler
     this.percentageOption = percentageOption;
   }
 
-  protected void doHandle(BattleType battleType, String username, SlashCommandInteractionEvent event)
+  protected void doHandle(
+      BattleType battleType, String username, SlashCommandInteractionEvent event, String googleSpreadsheetId)
       throws CommandHandlingException {
     int stage = getStage(event);
     double percentage = getPercentage(event);
 
     log.debug("received command: {} {} {} from user {}", event.getCommandString(), stage, percentage, username);
     try {
-      googleSheetsService.updateBattle(battleType, username, stage, percentage);
-      googleSheetsService.insertBattleHistory(battleType, username, stage, percentage);
+      googleSheetsService.updateBattle(googleSpreadsheetId, battleType, username, stage, percentage);
+      googleSheetsService.insertBattleHistory(googleSpreadsheetId, battleType, username, stage, percentage);
       event.getHook()
           .sendMessage("Updated the Mock battle sheet!")
           .setEphemeral(true)
