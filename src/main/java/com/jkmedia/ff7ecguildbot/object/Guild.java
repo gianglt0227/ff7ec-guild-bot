@@ -8,6 +8,5 @@ public class Guild {
   private String guildId;
   private Long channelId;
   private String channelName;
-  private String googleSpreadsheetId;
-  private GuildSpreadsheet guildSpreadsheet;
+  private GuildSpreadsheet guildSpreadsheet = new GuildSpreadsheet();
 }

@@ -2,7 +2,6 @@ package com.jkmedia.ff7ecguildbot.service;
 
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.*;
-import com.google.common.util.concurrent.RateLimiter;
 import com.jkmedia.ff7ecguildbot.GoogleSheetUtil;
 import com.jkmedia.ff7ecguildbot.object.Guild;
 import com.jkmedia.ff7ecguildbot.slashcommand.BattleType;
@@ -35,8 +34,6 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   private static final String REAL_BATTLE_HISTORY_SHEET = "Real Battle History";
   private static final String ATTEMPT_LEFT_SHEET = "Attempt Left";
 
-  private final RateLimiter rateLimiter = RateLimiter.create(1);
-
   @Override
   public void updateBattle(Long channelId, BattleType battleType, String username, int stage, double percentage)
       throws IOException {
@@ -45,14 +42,14 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
           case MOCK -> MOCK_BATTLE_SHEET;
           case REAL -> REAL_BATTLE_SHEET;
         };
-    String spreadsheetId = getSpreadsheetId(channelId);
-    Integer userRowNum = searchUser(spreadsheetId, sheetName, username);
+    Guild guild = getGuild(channelId);
+    Integer userRowNum = searchUser(guild, sheetName, username);
     String stageRange = GoogleSheetUtil.columnNumberToLetter(stage + 1) + userRowNum;
     String time = dateTimeFormatter.format(LocalDateTime.now());
 
-    updateCell(spreadsheetId, sheetName, "A" + userRowNum, username);
-    updateCell(spreadsheetId, sheetName, stageRange, percentage);
-    updateCell(spreadsheetId, sheetName, "G" + userRowNum, time);
+    updateCell(guild, sheetName, "A" + userRowNum, username);
+    updateCell(guild, sheetName, stageRange, percentage);
+    updateCell(guild, sheetName, "G" + userRowNum, time);
   }
 
   @Override
@@ -70,14 +67,13 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
           case REAL -> guild.getGuildSpreadsheet().getRealBattleHistorySheetIndex();
         };
 
-    String spreadsheetId = guild.getGoogleSpreadsheetId();
-    int rowNumToInsert = findLastRowNum(spreadsheetId, sheetName) + 1;
+    int rowNumToInsert = findLastRowNum(guild, sheetName) + 1;
     String time = dateTimeFormatter.format(LocalDateTime.now());
 
-    updateCell(spreadsheetId, sheetName, "A" + rowNumToInsert, username);
-    updateCell(spreadsheetId, sheetName, "B" + rowNumToInsert, stage);
-    updateCell(spreadsheetId, sheetName, "C" + rowNumToInsert, percentage);
-    updateCell(spreadsheetId, sheetName, "D" + rowNumToInsert, time);
+    updateCell(guild, sheetName, "A" + rowNumToInsert, username);
+    updateCell(guild, sheetName, "B" + rowNumToInsert, stage);
+    updateCell(guild, sheetName, "C" + rowNumToInsert, percentage);
+    updateCell(guild, sheetName, "D" + rowNumToInsert, time);
     sort(
         channelId,
         sheetIndex,
@@ -90,61 +86,37 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
 
   @Override
   public void updateAttemptLeft(Long channelId, String username, int attemptLeft) throws IOException {
-    String spreadsheetId = getSpreadsheetId(channelId);
-    Integer userRowNum = searchUser(spreadsheetId, ATTEMPT_LEFT_SHEET, username);
+    Guild guild = getGuild(channelId);
+    Integer userRowNum = searchUser(guild, ATTEMPT_LEFT_SHEET, username);
     String time = dateTimeFormatter.format(LocalDateTime.now());
 
-    updateCell(spreadsheetId, ATTEMPT_LEFT_SHEET, "A" + userRowNum, username);
-    updateCell(spreadsheetId, ATTEMPT_LEFT_SHEET, "B" + userRowNum, attemptLeft);
-    updateCell(spreadsheetId, ATTEMPT_LEFT_SHEET, "C" + userRowNum, time);
-    updateCell(spreadsheetId, ATTEMPT_LEFT_SHEET, "D" + userRowNum, "");
-  }
-
-  @Override
-  public void sort(
-      Long channelId,
-      Integer sheetId,
-      Integer startColumnIndex,
-      Integer startRowIndex,
-      Integer endColumnIndex,
-      Integer endRowIndex,
-      SortSpec... sortSpecs)
-      throws IOException {
-    GridRange gridRange = new GridRange()
-        .setSheetId(sheetId)
-        .setStartColumnIndex(startColumnIndex)
-        .setStartRowIndex(startRowIndex)
-        .setEndColumnIndex(endColumnIndex)
-        .setEndRowIndex(endRowIndex);
-    SortRangeRequest sortRangeRequest =
-        new SortRangeRequest().setRange(gridRange).setSortSpecs(Arrays.asList(sortSpecs));
-    Request request = new Request().setSortRange(sortRangeRequest);
-    BatchUpdateSpreadsheetRequest batchUpdateSpreadsheetRequest =
-        new BatchUpdateSpreadsheetRequest().setRequests(List.of(request));
-
-    sheetsService
-        .spreadsheets()
-        .batchUpdate(getSpreadsheetId(channelId), batchUpdateSpreadsheetRequest)
-        .execute();
+    updateCell(guild, ATTEMPT_LEFT_SHEET, "A" + userRowNum, username);
+    updateCell(guild, ATTEMPT_LEFT_SHEET, "B" + userRowNum, attemptLeft);
+    updateCell(guild, ATTEMPT_LEFT_SHEET, "C" + userRowNum, time);
+    updateCell(guild, ATTEMPT_LEFT_SHEET, "D" + userRowNum, "");
   }
 
   @Override
   public void restartAttempts(Long channelId) throws IOException {
-    String spreadsheetId = getSpreadsheetId(channelId);
-    int lastRowNum = findLastRowNum(spreadsheetId, ATTEMPT_LEFT_SHEET);
+    Guild guild = getGuild(channelId);
+    int lastRowNum = findLastRowNum(guild, ATTEMPT_LEFT_SHEET);
     String now = dateTimeFormatter.format(LocalDateTime.now());
     for (int i = 2; i <= lastRowNum; i++) {
-      updateCell(spreadsheetId, ATTEMPT_LEFT_SHEET, "B" + i, "");
-      updateCell(spreadsheetId, ATTEMPT_LEFT_SHEET, "C" + i, now);
-      updateCell(spreadsheetId, ATTEMPT_LEFT_SHEET, "D" + i, "Reset by bot");
+      updateCell(guild, ATTEMPT_LEFT_SHEET, "B" + i, "");
+      updateCell(guild, ATTEMPT_LEFT_SHEET, "C" + i, now);
+      updateCell(guild, ATTEMPT_LEFT_SHEET, "D" + i, "Reset by bot");
     }
   }
 
-  private int findLastRowNum(String spreadsheetId, String sheetName) throws IOException {
+  private int findLastRowNum(Guild guild, String sheetName) throws IOException {
     String range = getRangeOfUsernameColumn(sheetName);
-    log.debug("Finding the last row in this range {} of spreadsheetId {}", range, spreadsheetId);
-    ValueRange valueRange =
-        sheetsService.spreadsheets().values().get(spreadsheetId, range).execute();
+    String googleSpreadsheetId = guild.getGuildSpreadsheet().getGoogleSpreadsheetId();
+    log.debug("Finding the last row in this range {} of spreadsheetId {}", range, googleSpreadsheetId);
+    ValueRange valueRange = sheetsService
+        .spreadsheets()
+        .values()
+        .get(googleSpreadsheetId, range)
+        .execute();
     int lastRow = 1;
     if (!CollectionUtils.isEmpty(valueRange.getValues())) {
       return valueRange.getValues().size();
@@ -156,10 +128,13 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
     return String.format("'%s'!%s", sheetName, "A:A");
   }
 
-  private @NotNull Integer searchUser(String spreadsheetId, String sheetName, String username) throws IOException {
+  private @NotNull Integer searchUser(Guild guild, String sheetName, String username) throws IOException {
     String range = getRangeOfUsernameColumn(sheetName);
-    ValueRange result =
-        sheetsService.spreadsheets().values().get(spreadsheetId, range).execute();
+    ValueRange result = sheetsService
+        .spreadsheets()
+        .values()
+        .get(guild.getGuildSpreadsheet().getGoogleSpreadsheetId(), range)
+        .execute();
     Integer userRowNum = null;
 
     if (CollectionUtils.isEmpty(result.getValues())) {
@@ -182,13 +157,13 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
     return userRowNum;
   }
 
-  private void updateCell(String spreadsheetId, String sheetName, String range, Object value) throws IOException {
-    rateLimiter.acquire();
+  private void updateCell(Guild guild, String sheetName, String range, Object value) throws IOException {
+    guild.getGuildSpreadsheet().getWriteRateLimit().tryConsume(1);
     sheetsService
         .spreadsheets()
         .values()
         .update(
-            spreadsheetId,
+            guild.getGuildSpreadsheet().getGoogleSpreadsheetId(),
             String.format("'%s'!%s", sheetName, range),
             new ValueRange().setValues(List.of(Collections.singletonList(value))))
         .setValueInputOption("USER_ENTERED")
@@ -198,7 +173,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   private String getSpreadsheetId(Long channelId) {
     Guild guild = guildManagerService.findByChannelId(channelId);
     if (guild != null) {
-      return guild.getGoogleSpreadsheetId();
+      return guild.getGuildSpreadsheet().getGoogleSpreadsheetId();
     } else {
       throw new CommandHandlingException("This bot is not available for this guild");
     }
@@ -211,5 +186,33 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
     } else {
       throw new CommandHandlingException("This bot is not available for this guild");
     }
+  }
+
+  private void sort(
+      Long channelId,
+      Integer sheetId,
+      Integer startColumnIndex,
+      Integer startRowIndex,
+      Integer endColumnIndex,
+      Integer endRowIndex,
+      SortSpec... sortSpecs)
+      throws IOException {
+    getGuild(channelId).getGuildSpreadsheet().getWriteRateLimit().tryConsume(1);
+    GridRange gridRange = new GridRange()
+        .setSheetId(sheetId)
+        .setStartColumnIndex(startColumnIndex)
+        .setStartRowIndex(startRowIndex)
+        .setEndColumnIndex(endColumnIndex)
+        .setEndRowIndex(endRowIndex);
+    SortRangeRequest sortRangeRequest =
+        new SortRangeRequest().setRange(gridRange).setSortSpecs(Arrays.asList(sortSpecs));
+    Request request = new Request().setSortRange(sortRangeRequest);
+    BatchUpdateSpreadsheetRequest batchUpdateSpreadsheetRequest =
+        new BatchUpdateSpreadsheetRequest().setRequests(List.of(request));
+
+    sheetsService
+        .spreadsheets()
+        .batchUpdate(getSpreadsheetId(channelId), batchUpdateSpreadsheetRequest)
+        .execute();
   }
 }
