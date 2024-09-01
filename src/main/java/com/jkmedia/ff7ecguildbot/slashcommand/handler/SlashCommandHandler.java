@@ -1,6 +1,5 @@
 package com.jkmedia.ff7ecguildbot.slashcommand.handler;
 
-import com.jkmedia.ff7ecguildbot.slashcommand.CommandHandlingException;
 import com.jkmedia.ff7ecguildbot.slashcommand.SlashCommand;
 import java.util.List;
 import net.dv8tion.jda.api.Permission;
@@ -18,5 +17,5 @@ public interface SlashCommandHandler {
     return List.of();
   }
 
-  void handleEvent(SlashCommandInteractionEvent event, String googleSpreadsheetId) throws CommandHandlingException;
+  void handleEvent(SlashCommandInteractionEvent event, Long channelId);
 }

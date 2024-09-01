@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class CommandHandlingException extends Exception {
+public class CommandHandlingException extends RuntimeException {
   private final String replyMessage;
 
   public CommandHandlingException(String replyMessage, Throwable e) {

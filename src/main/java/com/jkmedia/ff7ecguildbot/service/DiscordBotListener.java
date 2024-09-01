@@ -24,7 +24,7 @@ public class DiscordBotListener extends ListenerAdapter {
       event.deferReply(true).queue();
       SlashCommandHandler slashCommandHandler =
           slashCommandHandlerFactory.getSlashCommandHandler(event.getName());
-      slashCommandHandler.handleEvent(event, getGoodleSpreadsheetId(event));
+      slashCommandHandler.handleEvent(event, getChannelId(event));
 
     } catch (CommandHandlingException e) {
       event.getHook().sendMessage(e.getReplyMessage()).setEphemeral(true).queue();
@@ -39,13 +39,13 @@ public class DiscordBotListener extends ListenerAdapter {
     }
   }
 
-  private String getGoodleSpreadsheetId(SlashCommandInteractionEvent event) throws CommandHandlingException {
+  private Long getChannelId(SlashCommandInteractionEvent event) {
     long channelId = event.getChannel().getIdLong();
     Guild guild = guildManagerService.findByChannelId(channelId);
     if (guild != null) {
-      return guild.getGoogleSpreadsheetId();
+      return channelId;
     } else {
-      throw new CommandHandlingException("This bot is not available for this guild");
+      throw new CommandHandlingException("The bot is not available for this guild");
     }
   }
 }

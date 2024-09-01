@@ -2,7 +2,6 @@ package com.jkmedia.ff7ecguildbot.slashcommand.handler;
 
 import com.jkmedia.ff7ecguildbot.service.GoogleSheetsService;
 import com.jkmedia.ff7ecguildbot.slashcommand.BattleType;
-import com.jkmedia.ff7ecguildbot.slashcommand.CommandHandlingException;
 import com.jkmedia.ff7ecguildbot.slashcommand.Option;
 import com.jkmedia.ff7ecguildbot.slashcommand.SlashCommand;
 import java.util.List;
@@ -43,11 +42,10 @@ public class RealBattleReportByAdminHandlerImpl extends AbstractBattleReportHand
   }
 
   @Override
-  public void handleEvent(SlashCommandInteractionEvent event, String googleSpreadsheetId)
-      throws CommandHandlingException {
+  public void handleEvent(SlashCommandInteractionEvent event, Long channelId) {
     String username = Objects.requireNonNull(event.getOption(Option.USERNAME.getValue()))
         .getAsString();
-    doHandle(BattleType.REAL, username, event, googleSpreadsheetId);
+    doHandle(BattleType.REAL, username, event, channelId);
   }
 
   @Override

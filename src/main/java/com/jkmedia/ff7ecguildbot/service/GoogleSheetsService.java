@@ -6,16 +6,16 @@ import java.io.IOException;
 
 public interface GoogleSheetsService {
 
-  void updateBattle(String spreadsheetId, BattleType battleType, String username, int stage, double percentage)
+  void updateBattle(Long channelId, BattleType battleType, String username, int stage, double percentage)
       throws IOException;
 
-  void insertBattleHistory(String spreadsheetId, BattleType battleType, String username, int stage, double percentage)
+  void insertBattleHistory(Long channelId, BattleType battleType, String username, int stage, double percentage)
       throws IOException;
 
-  void updateAttemptLeft(String spreadsheetId, String username, int attemptLeft) throws IOException;
+  void updateAttemptLeft(Long channelId, String username, int attemptLeft) throws IOException;
 
   void sort(
-      String spreadsheetId,
+      Long channelId,
       Integer sheetId,
       Integer startColumnIndex,
       Integer startRowIndex,
@@ -24,5 +24,5 @@ public interface GoogleSheetsService {
       SortSpec... sortSpecs)
       throws IOException;
 
-  void restartAttempts(String spreadsheetId) throws IOException;
+  void restartAttempts(Long channelId) throws IOException;
 }

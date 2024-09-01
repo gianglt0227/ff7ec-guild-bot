@@ -4,6 +4,7 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.*;
 import com.google.common.util.concurrent.RateLimiter;
 import com.jkmedia.ff7ecguildbot.GoogleSheetUtil;
+import com.jkmedia.ff7ecguildbot.object.Guild;
 import com.jkmedia.ff7ecguildbot.slashcommand.BattleType;
 import java.io.*;
 import java.time.LocalDateTime;
@@ -12,6 +13,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import com.jkmedia.ff7ecguildbot.slashcommand.CommandHandlingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 public class GoogleSheetsServiceImpl implements GoogleSheetsService {
 
   private final Sheets sheetsService;
+  private final GuildManagerService guildManagerService;
   private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss");
 
   private static final String MOCK_BATTLE_SHEET = "Mock Battle";
@@ -40,13 +44,14 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   private final RateLimiter rateLimiter = RateLimiter.create(1);
 
   @Override
-  public void updateBattle(String spreadsheetId, BattleType battleType, String username, int stage, double percentage)
+  public void updateBattle(Long channelId, BattleType battleType, String username, int stage, double percentage)
       throws IOException {
     String sheetName =
         switch (battleType) {
           case MOCK -> MOCK_BATTLE_SHEET;
           case REAL -> REAL_BATTLE_SHEET;
         };
+    String spreadsheetId = getSpreadsheetId(channelId);
     Integer userRowNum = searchUser(spreadsheetId, sheetName, username);
     String stageRange = GoogleSheetUtil.columnNumberToLetter(stage + 1) + userRowNum;
     String time = dateTimeFormatter.format(LocalDateTime.now());
@@ -58,8 +63,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
 
   @Override
   public void insertBattleHistory(
-      String spreadsheetId, BattleType battleType, String username, int stage, double percentage)
-      throws IOException {
+      Long channelId, BattleType battleType, String username, int stage, double percentage) throws IOException {
     String sheetName =
         switch (battleType) {
           case MOCK -> MOCK_BATTLE_HISTORY_SHEET;
@@ -71,6 +75,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
           case REAL -> REAL_BATTLE_HISTORY_SHEET_INDEX;
         };
 
+    String spreadsheetId = getSpreadsheetId(channelId);
     int rowNumToInsert = findLastRowNum(spreadsheetId, sheetName) + 1;
     String time = dateTimeFormatter.format(LocalDateTime.now());
 
@@ -79,7 +84,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
     updateCell(spreadsheetId, sheetName, "C" + rowNumToInsert, percentage);
     updateCell(spreadsheetId, sheetName, "D" + rowNumToInsert, time);
     sort(
-        spreadsheetId,
+        channelId,
         sheetIndex,
         0,
         1,
@@ -89,7 +94,8 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   }
 
   @Override
-  public void updateAttemptLeft(String spreadsheetId, String username, int attemptLeft) throws IOException {
+  public void updateAttemptLeft(Long channelId, String username, int attemptLeft) throws IOException {
+    String spreadsheetId = getSpreadsheetId(channelId);
     Integer userRowNum = searchUser(spreadsheetId, ATTEMPT_LEFT_SHEET, username);
     String time = dateTimeFormatter.format(LocalDateTime.now());
 
@@ -101,7 +107,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
 
   @Override
   public void sort(
-      String spreadsheetId,
+      Long channelId,
       Integer sheetId,
       Integer startColumnIndex,
       Integer startRowIndex,
@@ -123,12 +129,13 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
 
     sheetsService
         .spreadsheets()
-        .batchUpdate(spreadsheetId, batchUpdateSpreadsheetRequest)
+        .batchUpdate(getSpreadsheetId(channelId), batchUpdateSpreadsheetRequest)
         .execute();
   }
 
   @Override
-  public void restartAttempts(String spreadsheetId) throws IOException {
+  public void restartAttempts(Long channelId) throws IOException {
+    String spreadsheetId = getSpreadsheetId(channelId);
     int lastRowNum = findLastRowNum(spreadsheetId, ATTEMPT_LEFT_SHEET);
     String now = dateTimeFormatter.format(LocalDateTime.now());
     for (int i = 2; i <= lastRowNum; i++) {
@@ -191,5 +198,14 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
             new ValueRange().setValues(List.of(Collections.singletonList(value))))
         .setValueInputOption("USER_ENTERED")
         .execute();
+  }
+
+  private String getSpreadsheetId(Long channelId) {
+    Guild guild = guildManagerService.findByChannelId(channelId);
+    if (guild != null) {
+      return guild.getGoogleSpreadsheetId();
+    } else {
+      throw new CommandHandlingException("This bot is not available for this guild");
+    }
   }
 }

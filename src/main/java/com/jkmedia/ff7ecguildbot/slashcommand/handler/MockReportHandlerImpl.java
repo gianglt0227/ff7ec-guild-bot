@@ -2,7 +2,6 @@ package com.jkmedia.ff7ecguildbot.slashcommand.handler;
 
 import com.jkmedia.ff7ecguildbot.service.GoogleSheetsService;
 import com.jkmedia.ff7ecguildbot.slashcommand.BattleType;
-import com.jkmedia.ff7ecguildbot.slashcommand.CommandHandlingException;
 import com.jkmedia.ff7ecguildbot.slashcommand.SlashCommand;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +33,8 @@ public class MockReportHandlerImpl extends AbstractBattleReportHandler {
   }
 
   @Override
-  public void handleEvent(SlashCommandInteractionEvent event, String googleSpreadsheetId)
-      throws CommandHandlingException {
+  public void handleEvent(SlashCommandInteractionEvent event, Long channelId) {
     String username = event.getUser().getEffectiveName();
-    doHandle(BattleType.MOCK, username, event, googleSpreadsheetId);
+    doHandle(BattleType.MOCK, username, event, channelId);
   }
 }
