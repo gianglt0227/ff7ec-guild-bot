@@ -6,6 +6,7 @@ import com.google.common.util.concurrent.RateLimiter;
 import com.jkmedia.ff7ecguildbot.GoogleSheetUtil;
 import com.jkmedia.ff7ecguildbot.object.Guild;
 import com.jkmedia.ff7ecguildbot.slashcommand.BattleType;
+import com.jkmedia.ff7ecguildbot.slashcommand.CommandHandlingException;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,8 +14,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-import com.jkmedia.ff7ecguildbot.slashcommand.CommandHandlingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -36,11 +35,6 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   private static final String REAL_BATTLE_HISTORY_SHEET = "Real Battle History";
   private static final String ATTEMPT_LEFT_SHEET = "Attempt Left";
 
-  private static final Integer MOCK_BATTLE_SHEET_INDEX = 1448596833;
-  private static final Integer MOCK_BATTLE_HISTORY_SHEET_INDEX = 277694400;
-  private static final Integer REAL_BATTLE_SHEET_INDEX = 1815922811;
-  private static final Integer REAL_BATTLE_HISTORY_SHEET_INDEX = 992853521;
-  private static final Integer ATTEMPT_LEFT_SHEET_INDEX = 1867581291;
   private final RateLimiter rateLimiter = RateLimiter.create(1);
 
   @Override
@@ -69,13 +63,14 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
           case MOCK -> MOCK_BATTLE_HISTORY_SHEET;
           case REAL -> REAL_BATTLE_HISTORY_SHEET;
         };
+    Guild guild = getGuild(channelId);
     Integer sheetIndex =
         switch (battleType) {
-          case MOCK -> MOCK_BATTLE_HISTORY_SHEET_INDEX;
-          case REAL -> REAL_BATTLE_HISTORY_SHEET_INDEX;
+          case MOCK -> guild.getGuildSpreadsheet().getMockBattleHistorySheetIndex();
+          case REAL -> guild.getGuildSpreadsheet().getRealBattleHistorySheetIndex();
         };
 
-    String spreadsheetId = getSpreadsheetId(channelId);
+    String spreadsheetId = guild.getGoogleSpreadsheetId();
     int rowNumToInsert = findLastRowNum(spreadsheetId, sheetName) + 1;
     String time = dateTimeFormatter.format(LocalDateTime.now());
 
@@ -204,6 +199,15 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
     Guild guild = guildManagerService.findByChannelId(channelId);
     if (guild != null) {
       return guild.getGoogleSpreadsheetId();
+    } else {
+      throw new CommandHandlingException("This bot is not available for this guild");
+    }
+  }
+
+  private Guild getGuild(Long channelId) {
+    Guild guild = guildManagerService.findByChannelId(channelId);
+    if (guild != null) {
+      return guild;
     } else {
       throw new CommandHandlingException("This bot is not available for this guild");
     }

@@ -15,10 +15,9 @@ public class AttemptRestartTask {
   @Scheduled(cron = "0 0 9 * * *")
   public void restartAttempts() {
     log.debug("Resetting all attempts");
-
     guildManagerService.findAll().forEach(guild -> {
       try {
-        googleSheetsService.restartAttempts(guild.getGoogleSpreadsheetId());
+        googleSheetsService.restartAttempts(guild.getChannelId());
       } catch (Exception e) {
         log.error("", e);
       }

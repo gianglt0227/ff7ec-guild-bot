@@ -9,4 +9,5 @@ public class Guild {
   private Long channelId;
   private String channelName;
   private String googleSpreadsheetId;
+  private GuildSpreadsheet guildSpreadsheet;
 }
