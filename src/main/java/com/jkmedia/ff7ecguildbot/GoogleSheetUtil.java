@@ -1,5 +1,9 @@
 package com.jkmedia.ff7ecguildbot;
 
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.local.LocalBucket;
+import java.time.Duration;
+
 public class GoogleSheetUtil {
   private GoogleSheetUtil() {}
 
@@ -33,5 +37,13 @@ public class GoogleSheetUtil {
       i--;
     }
     return outputColumnNumber;
+  }
+
+  public static LocalBucket buildRateLimiter(Integer quota) {
+    return Bucket.builder()
+        .addLimit(limit -> limit.capacity(quota)
+            .refillGreedy(quota, Duration.ofMinutes(1))
+            .initialTokens(quota))
+        .build();
   }
 }

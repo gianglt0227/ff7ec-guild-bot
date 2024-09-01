@@ -1,12 +1,11 @@
 package com.jkmedia.ff7ecguildbot.service;
 
+import com.jkmedia.ff7ecguildbot.GoogleSheetUtil;
 import com.jkmedia.ff7ecguildbot.config.GuildConfiguration;
 import com.jkmedia.ff7ecguildbot.object.Guild;
 import com.jkmedia.ff7ecguildbot.object.RateLimitMode;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.local.LocalBucket;
 import jakarta.annotation.PostConstruct;
-import java.time.Duration;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
@@ -32,25 +31,17 @@ public class GuildManagerServiceImpl implements GuildManagerService {
         .collect(Collectors.toMap(Guild::getChannelId, Function.identity()));
     if (rateLimitMode == RateLimitMode.PER_GUILD) {
       for (Guild guild : channelGuildMap.values()) {
-        guild.getGuildSpreadsheet().setWriteRateLimit(buildRateLimiter(googleSheetWriteQuota));
-        guild.getGuildSpreadsheet().setReadRateLimit(buildRateLimiter(googleSheetReadQuota));
+        guild.getGuildSpreadsheet().setWriteRateLimit(GoogleSheetUtil.buildRateLimiter(googleSheetWriteQuota));
+        guild.getGuildSpreadsheet().setReadRateLimit(GoogleSheetUtil.buildRateLimiter(googleSheetReadQuota));
       }
     } else {
-      Bucket globalWriteBucket = buildRateLimiter(googleSheetWriteQuota);
-      Bucket globalReadBucket = buildRateLimiter(googleSheetReadQuota);
+      Bucket globalWriteBucket = GoogleSheetUtil.buildRateLimiter(googleSheetWriteQuota);
+      Bucket globalReadBucket = GoogleSheetUtil.buildRateLimiter(googleSheetReadQuota);
       for (Guild guild : channelGuildMap.values()) {
         guild.getGuildSpreadsheet().setWriteRateLimit(globalWriteBucket);
         guild.getGuildSpreadsheet().setReadRateLimit(globalReadBucket);
       }
     }
-  }
-
-  private static LocalBucket buildRateLimiter(Integer quota) {
-    return Bucket.builder()
-        .addLimit(limit -> limit.capacity(quota)
-            .refillGreedy(quota, Duration.ofMinutes(1))
-            .initialTokens(quota))
-        .build();
   }
 
   @Override

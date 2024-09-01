@@ -1,6 +1,6 @@
 package com.jkmedia.ff7ecguildbot.object;
 
 public enum RateLimitMode {
-  GLOBAL,
+  COMMON,
   PER_GUILD
 }

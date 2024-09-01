@@ -6,6 +6,7 @@ import com.jkmedia.ff7ecguildbot.GoogleSheetUtil;
 import com.jkmedia.ff7ecguildbot.object.Guild;
 import com.jkmedia.ff7ecguildbot.slashcommand.BattleType;
 import com.jkmedia.ff7ecguildbot.slashcommand.CommandHandlingException;
+import io.github.bucket4j.Bucket;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -33,6 +34,10 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   private static final String REAL_BATTLE_SHEET = "Real Battle";
   private static final String REAL_BATTLE_HISTORY_SHEET = "Real Battle History";
   private static final String ATTEMPT_LEFT_SHEET = "Attempt Left";
+  private static final Integer GOOGLE_SHEET_GLOBAL_READ_LIMIT = 300;
+  private static final Integer GOOGLE_SHEET_GLOBAL_WRITE_LIMIT = 300;
+  private final Bucket globalReadRateLimiter = GoogleSheetUtil.buildRateLimiter(GOOGLE_SHEET_GLOBAL_READ_LIMIT);
+  private final Bucket globalWriteRateLimiter = GoogleSheetUtil.buildRateLimiter(GOOGLE_SHEET_GLOBAL_WRITE_LIMIT);
 
   @Override
   public void updateBattle(Long channelId, BattleType battleType, String username, int stage, double percentage)
@@ -109,6 +114,8 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   }
 
   private int findLastRowNum(Guild guild, String sheetName) throws IOException {
+    globalReadRateLimiter.tryConsume(1);
+    guild.getGuildSpreadsheet().getWriteRateLimit().tryConsume(1);
     String range = getRangeOfUsernameColumn(sheetName);
     String googleSpreadsheetId = guild.getGuildSpreadsheet().getGoogleSpreadsheetId();
     log.debug("Finding the last row in this range {} of spreadsheetId {}", range, googleSpreadsheetId);
@@ -129,6 +136,8 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   }
 
   private @NotNull Integer searchUser(Guild guild, String sheetName, String username) throws IOException {
+    globalReadRateLimiter.tryConsume(1);
+    guild.getGuildSpreadsheet().getWriteRateLimit().tryConsume(1);
     String range = getRangeOfUsernameColumn(sheetName);
     ValueRange result = sheetsService
         .spreadsheets()
@@ -158,6 +167,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
   }
 
   private void updateCell(Guild guild, String sheetName, String range, Object value) throws IOException {
+    globalWriteRateLimiter.tryConsume(1);
     guild.getGuildSpreadsheet().getWriteRateLimit().tryConsume(1);
     sheetsService
         .spreadsheets()
@@ -197,6 +207,7 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
       Integer endRowIndex,
       SortSpec... sortSpecs)
       throws IOException {
+    globalReadRateLimiter.tryConsume(1);
     getGuild(channelId).getGuildSpreadsheet().getWriteRateLimit().tryConsume(1);
     GridRange gridRange = new GridRange()
         .setSheetId(sheetId)
