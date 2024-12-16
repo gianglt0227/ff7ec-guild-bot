@@ -9,6 +9,7 @@ import lombok.Getter;
 public enum SlashCommand {
   ADMIN_MOCK("admin-mock"),
   ADMIN_REAL_BATTLE("admin-real-battle"),
+  ADMIN_ATTEMPT_LEFT("admin-attempt-left"),
   CHANGE_SPREADSHEET("change-spreadsheet"),
   MOCK("mock"),
   REAL_BATTLE("real-battle"),
