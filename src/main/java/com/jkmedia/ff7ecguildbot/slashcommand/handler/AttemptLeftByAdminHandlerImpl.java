@@ -44,7 +44,7 @@ public class AttemptLeftByAdminHandlerImpl implements SlashCommandHandler {
   public void handleEvent(SlashCommandInteractionEvent event) {
     try {
       String username =
-        Objects.requireNonNull(event.getOption(Option.USERNAME.getValue())).getAsString();
+          Objects.requireNonNull(event.getOption(Option.USERNAME.getValue())).getAsString();
       int attemptLeft =
           Objects.requireNonNull(event.getOption(Option.ATTEMPT_LEFT.getValue())).getAsInt();
       googleSheetsService.updateAttemptLeft(username, attemptLeft);
