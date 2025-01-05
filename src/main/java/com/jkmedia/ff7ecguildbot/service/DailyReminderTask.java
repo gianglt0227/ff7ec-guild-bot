@@ -12,12 +12,13 @@ import org.springframework.stereotype.Component;
 public class DailyReminderTask {
   private final DiscordBotService discordBotService;
   private long dailyReminderChannelId;
+  private String message;
 
   @Scheduled(cron = "${daily-reminder.cron.expression}")
   public void remind() {
     log.debug("Daily reminder !");
     try {
-      discordBotService.sendMessage(dailyReminderChannelId, "@everyone Dailies reminder");
+      discordBotService.sendMessage(dailyReminderChannelId, message);
     } catch (Exception e) {
       log.error("", e);
     }
@@ -26,5 +27,10 @@ public class DailyReminderTask {
   @Value("${daily-reminder.channel-id}")
   public void setDailyReminderChannelId(long dailyReminderChannelId) {
     this.dailyReminderChannelId = dailyReminderChannelId;
+  }
+
+  @Value("${daily-reminder.message}")
+  public void setMessage(String message) {
+    this.message = message;
   }
 }
