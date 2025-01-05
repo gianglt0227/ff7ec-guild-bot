@@ -1,5 +1,7 @@
 package com.jkmedia.ff7ecguildbot.service;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class DailyReminderTask {
   private final DiscordBotService discordBotService;
+  private final MemeService memeService;
   private long dailyReminderChannelId;
   private String message;
 
@@ -18,6 +21,9 @@ public class DailyReminderTask {
   public void remind() {
     log.debug("Daily reminder !");
     try {
+      String memeUrl = memeService.fetchRandomMeme();
+      discordBotService.sendMessage(dailyReminderChannelId, message + " " + memeUrl);
+    } catch (MalformedURLException | URISyntaxException e) {
       discordBotService.sendMessage(dailyReminderChannelId, message);
     } catch (Exception e) {
       log.error("", e);

@@ -21,6 +21,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class BotConfiguration {
@@ -74,5 +75,10 @@ public class BotConfiguration {
   @Bean
   public JsonFactory jsonFactory() {
     return GsonFactory.getDefaultInstance();
+  }
+
+  @Bean
+  public RestTemplate restTemplate() {
+    return new RestTemplate();
   }
 }
