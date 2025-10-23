@@ -4,6 +4,7 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.*;
 import com.google.common.util.concurrent.RateLimiter;
 import com.jkmedia.ff7ecguildbot.GoogleSheetUtil;
+import com.jkmedia.ff7ecguildbot.config.Constant;
 import com.jkmedia.ff7ecguildbot.slashcommand.BattleType;
 import java.io.*;
 import java.time.LocalDateTime;
@@ -51,11 +52,12 @@ public class GoogleSheetsServiceImpl implements GoogleSheetsService {
         };
     Integer userRowNum = searchUser(sheetName, username);
     String stageRange = GoogleSheetUtil.columnNumberToLetter(stage + 1) + userRowNum;
+    String timeRange = GoogleSheetUtil.columnNumberToLetter(Constant.MAX_STAGE + 2) + userRowNum;
     String time = dateTimeFormatter.format(LocalDateTime.now());
 
     updateCell(sheetName, "A" + userRowNum, username);
     updateCell(sheetName, stageRange, percentage);
-    updateCell(sheetName, "G" + userRowNum, time);
+    updateCell(sheetName, timeRange, time);
   }
 
   @Override
